@@ -1,0 +1,83 @@
+{
+  "title": "General Knowledge Mock — Science & English",
+  "subject": "Mixed",
+  "durationMinutes": 30,
+  "instructions": "This paper has **two sections**. Read each question carefully.\n\n- Multiple-choice questions show *(select all that apply)* when more than one answer is correct.\n- Flag any question you want to come back to.",
+  "sections": [
+    {
+      "title": "Science",
+      "instructions": "Use the periodic table knowledge you have; no data sheet is provided.",
+      "questions": [
+        {
+          "id": "S1",
+          "type": "mcq",
+          "marks": 1,
+          "text": "Which gas makes up most of the Earth's atmosphere?",
+          "options": ["Oxygen", "Carbon dioxide", "Nitrogen", "Argon"]
+        },
+        {
+          "id": "S2",
+          "type": "mcq",
+          "marks": 2,
+          "allowMultiple": true,
+          "text": "Which of the following are **noble gases**? (select all that apply)",
+          "options": ["Helium", "Chlorine", "Neon", "Hydrogen", "Krypton"]
+        },
+        {
+          "id": "S3",
+          "type": "fill_blank",
+          "marks": 3,
+          "blanks": 3,
+          "text": "Photosynthesis converts carbon dioxide and {{1}} into glucose and {{2}}, using energy from {{3}}."
+        },
+        {
+          "id": "S4",
+          "type": "typed",
+          "marks": 4,
+          "text": "Explain, in terms of particles, why a gas exerts a pressure on the walls of its container. Refer to what happens when the temperature increases."
+        },
+        {
+          "id": "S5",
+          "type": "fill_blank",
+          "marks": 2,
+          "blanks": 2,
+          "text": "Using $F = ma$, a force of $12\\,\\text{N}$ acting on a mass of $3\\,\\text{kg}$ gives an acceleration of {{1}} $\\text{m/s}^2$. Doubling the mass halves the acceleration to {{2}} $\\text{m/s}^2$."
+        }
+      ]
+    },
+    {
+      "title": "English",
+      "questions": [
+        {
+          "id": "E1",
+          "type": "mcq",
+          "marks": 1,
+          "text": "Which sentence uses the apostrophe correctly?",
+          "options": ["The dog wagged it's tail.", "The dog wagged its tail.", "The dogs' wagged their tail's."]
+        },
+        {
+          "id": "E2",
+          "type": "fill_blank",
+          "marks": 2,
+          "blanks": 2,
+          "text": "A word that describes a noun is called an {{1}}, and a word that describes a verb is called an {{2}}."
+        },
+        {
+          "id": "E3",
+          "type": "typed",
+          "marks": 6,
+          "text": "> \"The fog crept in on little cat feet.\"\n\nIdentify the literary technique used in this line and explain its effect on the reader. Write a short paragraph."
+        },
+        {
+          "id": "E4",
+          "type": "multipart",
+          "text": "Read the sentence: *Despite the rain, the match went ahead as planned.*",
+          "parts": [
+            { "label": "a", "type": "typed", "marks": 1, "text": "Identify the subordinate clause." },
+            { "label": "b", "type": "mcq", "marks": 1, "text": "What type of word is *Despite*?", "options": ["Conjunction", "Preposition", "Adverb"] }
+          ]
+        }
+      ]
+    }
+  ]
+}

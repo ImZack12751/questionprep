@@ -1,0 +1,77 @@
+:root {
+  --font-ui: 'Instrument Sans Variable', system-ui, sans-serif;
+  --font-paper: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
+  --sheet-width: 820px;
+  --topbar-h: 60px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Light: warm stone desk, cream paper, bottle-green ink, red-pen flags. */
+  --desk: #e9e3d5;
+  --desk-2: #ded6c4;
+  --sheet: #fcfaf4;
+  --sheet-edge: #e2dac7;
+  --surface: #fffdf8;
+  --ink: #1b2220;
+  --ink-soft: #3d4642;
+  --muted: #5c6460;
+  --rule: #d6ccb6;
+  --rule-strong: #b9ad94;
+  --accent: #1d5a4a;
+  --accent-hover: #164839;
+  --accent-ink: #ffffff;
+  --accent-soft: #dcebe4;
+  --flag: #b23c17;
+  --flag-soft: #f8e1d6;
+  --amber: #8f5300;
+  --amber-soft: #fbe9c8;
+  --danger: #b0261c;
+  --danger-soft: #f9dcd8;
+  --focus: #2f7bd8;
+  --shadow: 0 1px 2px rgb(60 45 20 / 0.08), 0 8px 28px rgb(60 45 20 / 0.08);
+  --shadow-lg: 0 2px 6px rgb(40 30 10 / 0.1), 0 24px 60px rgb(40 30 10 / 0.18);
+  --margin-rule: #e7b8a8;
+  --grain-opacity: 0.35;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --desk: #101413;
+  --desk-2: #171c1a;
+  --sheet: #1a201e;
+  --sheet-edge: #2a322f;
+  --surface: #202725;
+  --ink: #ece7dc;
+  --ink-soft: #cdc8bc;
+  --muted: #a39f95;
+  --rule: #343d39;
+  --rule-strong: #4b5651;
+  --accent: #86cdb2;
+  --accent-hover: #a2dcc6;
+  --accent-ink: #0b1a14;
+  --accent-soft: #1f3a31;
+  --flag: #f2946c;
+  --flag-soft: #43261b;
+  --amber: #f3bb5b;
+  --amber-soft: #3d2d10;
+  --danger: #f2877e;
+  --danger-soft: #45201d;
+  --focus: #7db4ff;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 28px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 2px 6px rgb(0 0 0 / 0.5), 0 24px 60px rgb(0 0 0 / 0.55);
+  --margin-rule: #4a302a;
+  --grain-opacity: 0.18;
+  color-scheme: dark;
+}
