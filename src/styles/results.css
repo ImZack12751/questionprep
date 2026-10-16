@@ -5,9 +5,8 @@
 }
 .results-hero h1 {
   margin: var(--space-2) 0 var(--space-1);
-  font-family: var(--font-paper);
-  font-size: clamp(2rem, 3.6vw, 2.8rem);
-  font-weight: 600;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  font-weight: 700;
   letter-spacing: -0.015em;
 }
 .stats {
@@ -35,9 +34,9 @@
 }
 .stats dd {
   margin: 0;
-  font-family: var(--font-paper);
-  font-size: 2.1rem;
-  font-weight: 600;
+  font-size: 1.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
 .stats dd small {
@@ -59,9 +58,8 @@
 }
 .export-panel h2 {
   margin-bottom: var(--space-1);
-  font-family: var(--font-paper);
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 700;
 }
 .export-actions {
   display: grid;
@@ -72,9 +70,9 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  border: 1px dashed var(--rule-strong);
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--rule);
   border-radius: var(--radius);
 }
 .export-option p {
@@ -89,7 +87,7 @@
 }
 
 .results-sheet {
-  padding: var(--space-7) var(--space-7) var(--space-6) calc(55px + var(--space-6));
+  padding: var(--space-7) var(--sheet-pad) var(--space-6);
 }
 .print-head {
   margin-bottom: var(--space-5);
@@ -136,7 +134,7 @@
   position: absolute;
   top: var(--space-5);
   bottom: var(--space-5);
-  left: calc(-1 * (55px + var(--space-6)) + 22px);
+  left: calc(-1 * var(--sheet-pad) + 16px);
   width: 4px;
   border-radius: 2px;
   background: var(--flag);
@@ -264,12 +262,6 @@
   }
   .export-actions {
     grid-template-columns: 1fr;
-  }
-  .results-sheet {
-    padding: var(--space-6) var(--space-5) var(--space-5) calc(55px + var(--space-4));
-  }
-  .review-q.is-flagged::before {
-    left: calc(-1 * (55px + var(--space-4)) + 22px);
   }
 }
 

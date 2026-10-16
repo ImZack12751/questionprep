@@ -86,7 +86,7 @@ export function ResultsScreen({ attemptId }: { attemptId: string }) {
           <div>
             <h2 id="export-title">Export</h2>
             <p className="muted">
-              Questionprep doesn't grade. Export your answers and paste the JSON into Claude (or another AI) to get them marked with feedback.
+              Answers are not marked in Questionprep. Export the JSON and paste it into Claude or another AI to have your answers marked.
             </p>
           </div>
           <div className="export-actions">

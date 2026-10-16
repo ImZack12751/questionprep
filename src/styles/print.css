@@ -14,11 +14,11 @@
     --muted: #555;
     --rule: #ccc;
     --rule-strong: #999;
-    --accent: #1d5a4a;
+    --accent: #1e3a8a;
     --accent-ink: #fff;
-    --accent-soft: #e8f1ed;
-    --flag: #b23c17;
-    --flag-soft: #fbeae3;
+    --accent-soft: #e6ecf8;
+    --flag: #b91c1c;
+    --flag-soft: #fde8e8;
     color-scheme: light;
   }
 
@@ -26,7 +26,6 @@
     background: #fff;
     font-size: 11pt;
   }
-  body::before,
   .no-print,
   .toast-region {
     display: none !important;

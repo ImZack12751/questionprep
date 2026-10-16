@@ -12,9 +12,8 @@
   gap: var(--space-4);
   height: var(--topbar-h);
   padding: 0 var(--space-5);
-  border-bottom: 1px solid var(--rule);
-  background: color-mix(in srgb, var(--desk) 88%, transparent);
-  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rule-strong);
+  background: var(--surface);
 }
 .exam-title {
   display: flex;
@@ -26,13 +25,12 @@
   flex: none;
   width: 28px;
   height: 28px;
-  border-radius: 7px;
-  font-size: 1.1rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
 }
 .exam-title-text {
   overflow: hidden;
-  font-family: var(--font-paper);
-  font-size: 1.1rem;
+  font-size: 0.98rem;
   font-weight: 600;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -99,7 +97,7 @@
   top: var(--topbar-h);
   z-index: 30;
   padding: var(--space-4) 0 var(--space-3);
-  background: linear-gradient(var(--desk) 75%, transparent);
+  background: var(--desk);
 }
 .section-tabs {
   display: flex;
@@ -156,7 +154,7 @@
 }
 
 .exam-sheet {
-  padding: var(--space-7) var(--space-7) var(--space-6) calc(55px + var(--space-6));
+  padding: var(--space-7) var(--sheet-pad) var(--space-6);
 }
 .exam-section-head {
   margin-bottom: var(--space-6);
@@ -175,7 +173,6 @@
   color: var(--ink-soft);
   font-family: var(--font-paper);
   font-size: 1.05rem;
-  font-style: italic;
 }
 .exam-section-foot {
   display: flex;
@@ -200,7 +197,6 @@
   place-items: center;
   padding: var(--space-5);
   background: var(--desk);
-  background-image: repeating-linear-gradient(-45deg, transparent 0 14px, color-mix(in srgb, var(--rule) 45%, transparent) 14px 15px);
   animation: fade-in 0.2s var(--ease);
 }
 .pause-card {
@@ -216,9 +212,8 @@
   text-align: center;
 }
 .pause-card h2 {
-  font-family: var(--font-paper);
-  font-size: 2.2rem;
-  font-weight: 600;
+  font-size: 1.6rem;
+  font-weight: 700;
 }
 .pause-card .btn {
   margin-top: var(--space-3);
@@ -266,9 +261,6 @@
   }
   .timer {
     justify-self: start;
-  }
-  .exam-sheet {
-    padding: var(--space-6) var(--space-5) var(--space-5) calc(55px + var(--space-4));
   }
 }
 

@@ -99,23 +99,16 @@
   place-items: center;
   width: 34px;
   height: 34px;
-  border-radius: 9px;
+  border-radius: 4px;
   background: var(--accent);
   color: var(--accent-ink);
-  font-family: var(--font-paper);
-  font-size: 1.35rem;
-  font-weight: 700;
-  font-style: italic;
+  font-size: 1.1rem;
+  font-weight: 800;
 }
 .brand-word {
-  font-family: var(--font-paper);
-  font-size: 1.4rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 700;
   letter-spacing: -0.01em;
-}
-.brand-word em {
-  color: var(--accent);
-  font-weight: 500;
 }
 
 /* Dialog */
@@ -137,9 +130,8 @@
 }
 .dialog-title {
   margin-bottom: var(--space-3);
-  font-family: var(--font-paper);
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 700;
 }
 .dialog-content {
   color: var(--ink-soft);

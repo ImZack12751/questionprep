@@ -109,7 +109,7 @@ export function StartScreen({ paperId }: { paperId: string }) {
                 <Icon name="play" /> Start{attempts.length ? ' new attempt' : ''}
               </button>
             )}
-            <p className="muted start-note">The clock starts as soon as you press start. You can pause at any time.</p>
+            <p className="muted start-note">The timer starts when you select Start. You may pause the exam at any time.</p>
           </div>
         </article>
 

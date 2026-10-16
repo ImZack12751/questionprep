@@ -12,7 +12,7 @@
   position: absolute;
   top: var(--space-5);
   bottom: var(--space-5);
-  left: calc(-1 * (55px + var(--space-6)) + 22px);
+  left: calc(-1 * var(--sheet-pad) + 16px);
   width: 4px;
   border-radius: 2px;
   background: var(--flag);
@@ -226,14 +226,10 @@
   padding: var(--space-3) var(--space-4);
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius);
-  /* Ruled answer lines. */
-  background:
-    repeating-linear-gradient(transparent 0 calc(1.7em - 1px), var(--rule) calc(1.7em - 1px) 1.7em) 0 var(--space-3) / 100% auto no-repeat,
-    var(--surface);
-  background-attachment: local;
+  background: var(--surface);
   font-family: var(--font-paper);
   font-size: 1.08rem;
-  line-height: 1.7;
+  line-height: 1.6;
   resize: none;
   overflow: hidden;
   field-sizing: content;
@@ -332,8 +328,5 @@ math-field.math-input::part(virtual-keyboard-toggle) {
     display: flex;
     grid-area: label;
     flex-direction: column;
-  }
-  .question.is-flagged::before {
-    left: calc(-1 * (55px + var(--space-4)) + 22px);
   }
 }

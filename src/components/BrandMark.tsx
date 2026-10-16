@@ -7,9 +7,7 @@ export function BrandMark({ compact }: { compact?: boolean }) {
         Q
       </span>
       {!compact && (
-        <span className="brand-word">
-          Question<em>prep</em>
-        </span>
+        <span className="brand-word">Questionprep</span>
       )}
     </a>
   );

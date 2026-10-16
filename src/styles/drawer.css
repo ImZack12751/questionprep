@@ -114,8 +114,7 @@
   font-size: 0.92rem;
 }
 .calc-message h3 {
-  font-family: var(--font-paper);
-  font-size: 1.2rem;
+  font-size: 1.05rem;
 }
 .calc-message code {
   font-family: var(--font-mono);

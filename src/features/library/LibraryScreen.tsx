@@ -63,11 +63,10 @@ export function LibraryScreen() {
       <main className="library-main">
         <section className="library-hero">
           <div>
-            <p className="eyebrow">Your exam room</p>
-            <h1>Sit the paper. Under the clock.</h1>
+            <h1>Practice papers</h1>
             <p className="lede">
-              Generate a question paper with an AI, drop the JSON here, and practise it in a quiet, timed exam sheet. Everything stays in this
-              browser.
+              Upload a question paper in JSON format and sit it under timed exam conditions. Papers and attempts are stored in this browser
+              only.
             </p>
           </div>
           <div className="library-actions">
@@ -97,13 +96,13 @@ export function LibraryScreen() {
         {entries === null ? null : entries.length === 0 ? (
           <button type="button" className="empty-drop" onClick={() => fileInput.current?.click()}>
             <Icon name="upload" size={28} />
-            <strong>Drop a paper's .json file anywhere on this page</strong>
-            <span>or click to choose a file. No paper yet? Load a sample, or copy the AI prompt to generate one.</span>
+            <strong>No papers uploaded</strong>
+            <span>Drop a .json file anywhere on this page or click to choose one. You can also load a sample, or copy the AI prompt to generate a paper.</span>
           </button>
         ) : (
           <section aria-label="Saved papers">
             <h2 className="section-label">
-              Library <span>{entries.length}</span>
+              Saved papers <span>{entries.length}</span>
             </h2>
             <div className="paper-grid">
               {entries.map((e) => (
@@ -118,7 +117,7 @@ export function LibraryScreen() {
         <div className="drop-overlay" aria-hidden>
           <div>
             <Icon name="upload" size={36} />
-            <p>Drop to add to your library</p>
+            <p>Drop file to upload</p>
           </div>
         </div>
       )}
