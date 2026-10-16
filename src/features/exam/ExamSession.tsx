@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Rich } from '../../components/Rich';
+import { CalculatorDrawer } from '../calculator/CalculatorDrawer';
+import { useDrawerWidth } from '../calculator/useDrawerWidth';
 import { navigate } from '../../lib/router';
 import { questionStatus } from '../attempt/answers';
 import type { Attempt } from '../attempt/types';
@@ -18,6 +20,8 @@ export function ExamSession({ initial }: { initial: Attempt }) {
   const [paused, setPaused] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [timeUp, setTimeUp] = useState(false);
+  const [calcOpen, setCalcOpen] = useState(false);
+  const [calcWidth, setCalcWidth] = useDrawerWidth();
   const locked = attempt.status !== 'in_progress';
 
   const timer = useExamTimer({
@@ -68,7 +72,10 @@ export function ExamSession({ initial }: { initial: Attempt }) {
   }, [locked]);
 
   return (
-    <div className={`exam ${paused ? 'is-paused' : ''} ${locked ? 'is-locked' : ''}`}>
+    <div
+      className={`exam ${paused ? 'is-paused' : ''} ${locked ? 'is-locked' : ''} ${calcOpen ? 'calc-open' : ''}`}
+      style={{ '--calc-w': `${calcWidth}px` } as React.CSSProperties}
+    >
       <ExamTopBar
         title={paper.title}
         remainingMs={timer.remainingMs}
@@ -122,6 +129,13 @@ export function ExamSession({ initial }: { initial: Attempt }) {
         </main>
       </div>
 
+      <CalculatorDrawer
+        attemptId={attempt.id}
+        open={calcOpen}
+        onToggle={() => setCalcOpen((o) => !o)}
+        width={calcWidth}
+        onResize={setCalcWidth}
+      />
       {paused && <PauseOverlay remainingMs={timer.remainingMs} onResume={() => setPaused(false)} />}
       <SubmitDialog open={confirming} attempt={attempt} onCancel={() => setConfirming(false)} onConfirm={confirmSubmit} onJump={jumpTo} />
       <TimeUpDialog open={timeUp} onContinue={() => navigate({ name: 'results', attemptId: attempt.id }, true)} />

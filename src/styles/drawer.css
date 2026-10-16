@@ -1,0 +1,161 @@
+/* Desktop: the open drawer pushes the paper left instead of covering it. */
+@media (min-width: 1100px) {
+  .exam.calc-open .exam-layout {
+    padding-right: var(--calc-w);
+  }
+}
+
+.calc-drawer {
+  position: fixed;
+  top: var(--topbar-h);
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100vw - 48px);
+  border-left: 1px solid var(--rule-strong);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  transform: translateX(100%);
+  visibility: hidden;
+  transition:
+    transform 0.28s var(--ease),
+    visibility 0s linear 0.28s;
+}
+.calc-drawer.is-open {
+  transform: none;
+  visibility: visible;
+  transition: transform 0.28s var(--ease);
+}
+.calc-drawer.is-resizing {
+  transition: none;
+  user-select: none;
+}
+
+.calc-resize {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -5px;
+  z-index: 2;
+  width: 10px;
+  cursor: col-resize;
+}
+.calc-resize::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 4px;
+  height: 44px;
+  margin-top: 40px;
+  border-radius: 2px;
+  background: var(--rule-strong);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.calc-resize:hover::after,
+.calc-resize:focus-visible::after,
+.is-resizing .calc-resize::after {
+  opacity: 1;
+}
+
+.calc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--rule);
+}
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--desk);
+}
+.segmented button {
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.segmented button.is-on {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
+.calc-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+.calc-pane {
+  position: absolute;
+  inset: 0;
+}
+/* Desmos ships a light UI; keep it on a light surface even in dark mode for legibility. */
+.calc-pane {
+  background: #fff;
+  color: #111;
+}
+.calc-message {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  padding: var(--space-5);
+  font-size: 0.92rem;
+}
+.calc-message h3 {
+  font-family: var(--font-paper);
+  font-size: 1.2rem;
+}
+.calc-message code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+/* The handle tab, centred on the right edge; travels with the drawer. */
+.calc-handle {
+  position: fixed;
+  top: 50%;
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) 7px;
+  border: 1px solid var(--rule-strong);
+  border-right: 0;
+  border-radius: 10px 0 0 10px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: var(--shadow);
+  transform: translateY(-50%);
+  cursor: pointer;
+  transition:
+    right 0.28s var(--ease),
+    padding 0.15s;
+}
+.calc-drawer.is-resizing ~ .calc-handle,
+.calc-handle:has(+ .calc-drawer.is-resizing) {
+  transition: none;
+}
+.calc-handle:hover {
+  padding-left: 10px;
+}
+.calc-handle-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
