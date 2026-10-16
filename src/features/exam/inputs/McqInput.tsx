@@ -1,5 +1,6 @@
 import { Rich } from '../../../components/Rich';
 import type { Answer } from '../../attempt/types';
+import { optionLetter } from '../../attempt/answers';
 
 interface Props {
   name: string;
@@ -11,7 +12,7 @@ interface Props {
   labelledBy: string;
 }
 
-export const optionLetter = (i: number) => String.fromCharCode(65 + i);
+
 
 export function McqInput({ name, options, allowMultiple, value, onChange, disabled, labelledBy }: Props) {
   const selected = value?.selected ?? [];

@@ -56,3 +56,5 @@ export function attemptSummary(attempt: Attempt) {
   const flagged = qs.filter(({ q }) => attempt.flags[q.id]).length;
   return { total: qs.length, answered, partial, flagged };
 }
+
+export const optionLetter = (i: number) => String.fromCharCode(65 + i);

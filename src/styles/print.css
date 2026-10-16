@@ -1,0 +1,79 @@
+@media print {
+  @page {
+    margin: 16mm 14mm;
+  }
+
+  /* Always print in the light palette, regardless of the on-screen theme. */
+  :root,
+  :root[data-theme='dark'] {
+    --sheet: #fff;
+    --surface: #fff;
+    --desk: #fff;
+    --ink: #111;
+    --ink-soft: #333;
+    --muted: #555;
+    --rule: #ccc;
+    --rule-strong: #999;
+    --accent: #1d5a4a;
+    --accent-ink: #fff;
+    --accent-soft: #e8f1ed;
+    --flag: #b23c17;
+    --flag-soft: #fbeae3;
+    color-scheme: light;
+  }
+
+  body {
+    background: #fff;
+    font-size: 11pt;
+  }
+  body::before,
+  .no-print,
+  .toast-region {
+    display: none !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .results-main {
+    max-width: none;
+    padding: 0;
+  }
+  .sheet.print-doc {
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+    background: #fff;
+  }
+  .question-text,
+  .review-typed {
+    font-size: 11.5pt;
+  }
+  .review-q {
+    padding: 10pt 0;
+    /* Long multipart questions may split between parts, never inside one. */
+    break-inside: auto;
+  }
+  .review-q:not(:has(.review-part)) {
+    break-inside: avoid-page;
+  }
+  /* No margin rule on paper, so put the flag marker on the question itself. */
+  .review-q.is-flagged::before {
+    display: none;
+  }
+  .review-q.is-flagged {
+    border-top: 2px solid var(--flag);
+  }
+  .review-section-title {
+    break-after: avoid-page;
+  }
+  .review-q-head,
+  .review-part-head {
+    break-after: avoid-page;
+  }
+  .katex,
+  .katex-display {
+    break-inside: avoid;
+  }
+}
