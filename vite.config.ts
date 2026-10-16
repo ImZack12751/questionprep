@@ -9,6 +9,8 @@ export default defineConfig(({ mode }) => {
   return {
     base: env.VITE_BASE || '/questionprep/',
     plugins: [react()],
+    // KaTeX and MathLive are large by nature; MathLive is already split into its own lazy chunk.
+    build: { chunkSizeWarningLimit: 1000 },
     test: {
       environment: 'node',
       include: ['src/**/*.test.ts'],

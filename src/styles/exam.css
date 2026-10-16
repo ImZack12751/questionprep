@@ -271,3 +271,8 @@
     padding: var(--space-6) var(--space-5) var(--space-5) calc(55px + var(--space-4));
   }
 }
+
+/* Belt and braces: the paper is hidden, not merely covered, while paused. */
+.exam.is-paused .exam-main {
+  visibility: hidden;
+}

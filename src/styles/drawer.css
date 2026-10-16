@@ -101,8 +101,8 @@
   position: absolute;
   inset: 0;
 }
-/* Desmos ships a light UI; keep it on a light surface even in dark mode for legibility. */
-.calc-pane {
+/* The scientific calculator only has a light UI, so it keeps a light surface in dark mode. */
+.calc-pane-scientific {
   background: #fff;
   color: #111;
 }

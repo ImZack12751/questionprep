@@ -6,6 +6,11 @@ export function loadMathLive() {
     // Fonts come from the bundled fonts.css; sounds are off for a quiet exam room.
     ml.MathfieldElement.fontsDirectory = null;
     ml.MathfieldElement.soundsDirectory = null;
+    // Leave room below the paper so the on-screen keyboard never hides the last question.
+    const kb = window.mathVirtualKeyboard;
+    kb.addEventListener('geometrychange', () => {
+      document.body.style.paddingBottom = kb.visible ? `${kb.boundingRect.height}px` : '';
+    });
     return ml;
   });
   return promise;

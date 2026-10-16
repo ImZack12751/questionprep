@@ -5,6 +5,7 @@ export interface DesmosCalculator {
   resize(): void;
   observeEvent(event: 'change', cb: () => void): void;
   destroy(): void;
+  updateSettings?(settings: Record<string, unknown>): void;
 }
 
 export interface DesmosApi {
@@ -18,7 +19,7 @@ declare global {
   }
 }
 
-const API_VERSION = 'v1.11';
+const API_VERSION = 'v1.12';
 /** Desmos's public demo key from their API docs: for local development only. */
 const DEMO_KEY = 'dcb31709b452b1cf9dc26972add0fda6';
 

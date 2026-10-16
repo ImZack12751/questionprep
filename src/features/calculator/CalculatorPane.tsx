@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTheme } from '../../lib/theme';
 import type { DesmosApi, DesmosCalculator } from './desmos';
 
 interface Props {
@@ -15,6 +16,7 @@ interface Props {
 export function CalculatorPane({ api, kind, visible, initialState, onState, layoutKey }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const calc = useRef<DesmosCalculator | null>(null);
+  const { theme } = useTheme();
   const onStateRef = useRef(onState);
   onStateRef.current = onState;
 
@@ -22,7 +24,7 @@ export function CalculatorPane({ api, kind, visible, initialState, onState, layo
     if (!el.current) return;
     const opts =
       kind === 'graphing'
-        ? { expressionsCollapsed: false, settingsMenu: true, zoomButtons: true, border: false, invertedColors: false }
+        ? { expressionsCollapsed: false, settingsMenu: true, zoomButtons: true, border: false }
         : { border: false };
     const c = kind === 'graphing' ? api.GraphingCalculator(el.current, opts) : api.ScientificCalculator(el.current, opts);
     if (initialState) {
@@ -47,9 +49,14 @@ export function CalculatorPane({ api, kind, visible, initialState, onState, layo
     // The instance lives for the whole exam; initial state is only applied once.
   }, [api, kind]);
 
+  // The graphing calculator has a native dark rendering; the scientific one stays light.
+  useEffect(() => {
+    if (kind === 'graphing') calc.current?.updateSettings?.({ invertedColors: theme === 'dark' });
+  }, [kind, theme]);
+
   useEffect(() => {
     if (visible) calc.current?.resize();
   }, [visible, layoutKey]);
 
-  return <div ref={el} className="calc-pane" hidden={!visible} />;
+  return <div ref={el} className={`calc-pane calc-pane-${kind}`} hidden={!visible} />;
 }
