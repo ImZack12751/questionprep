@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
 import maths from '../../../samples/maths-calculus-algebra.json';
 import mixed from '../../../samples/mixed-science-english.json';
@@ -54,5 +55,17 @@ describe('Markdown export', () => {
     expect(md).toContain('> Minimum,\n> since a > 0');
     expect(md).toContain('#### (b) — 1 mark');
     expect(md).toContain('{{1}}'.replace('{{1}}', '**[ ____ ]**'));
+  });
+});
+
+describe('formatted written answers', () => {
+  const a = attemptFor(mixed, {
+    S4: { type: 'typed', text: 'Particles collide\n- faster when hot', html: '<div>Particles <b>collide</b></div><ul><li>faster when <i>hot</i></li></ul>' },
+  });
+  it('JSON export gets plain text', () => {
+    expect(buildExport(a).sections[0]!.questions[3]!.answer).toBe('Particles collide\n- faster when hot');
+  });
+  it('Markdown export keeps formatting', () => {
+    expect(toMarkdown(a)).toContain('> Particles **collide**\n> - faster when *hot*');
   });
 });

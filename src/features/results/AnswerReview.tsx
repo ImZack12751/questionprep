@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Rich } from '../../components/Rich';
 import { plural } from '../../lib/format';
 import { renderLatex } from '../../lib/richtext';
+import { plainToHtml, sanitizeAnswerHtml } from '../../lib/richAnswer';
 import { answerKey, isAnswered, optionLetter } from '../attempt/answers';
 import type { Answer, Attempt } from '../attempt/types';
 import type { Answerable } from '../paper/schema';
@@ -48,7 +49,10 @@ function ItemReview({ item, answer }: { item: Answerable; answer: Answer | undef
         ) : item.type === 'math' && answer?.type === 'math' ? (
           <div className="review-math" dangerouslySetInnerHTML={{ __html: renderLatex(answer.latex, true) }} />
         ) : answer?.type === 'typed' ? (
-          <p className="review-typed">{answer.text}</p>
+          <div
+            className="review-typed"
+            dangerouslySetInnerHTML={{ __html: answer.html ? sanitizeAnswerHtml(answer.html) : plainToHtml(answer.text) }}
+          />
         ) : null}
       </div>
     </>

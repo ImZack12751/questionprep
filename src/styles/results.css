@@ -190,6 +190,7 @@
   font-family: var(--font-paper);
   font-size: 1.08rem;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 .review-math .katex-display {
   margin: 0.2em 0;

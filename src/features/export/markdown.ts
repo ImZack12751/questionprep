@@ -1,4 +1,6 @@
 import { plural } from '../../lib/format';
+import { htmlToMarkdown } from '../../lib/richAnswer';
+import { answerKey } from '../attempt/answers';
 import { buildExport, type ExportedAnswer, type ExportedQuestion } from './exportData';
 import type { Attempt } from '../attempt/types';
 import { optionLetter } from '../attempt/answers';
@@ -36,6 +38,11 @@ function answerMd(item: Item): string {
 
 export function toMarkdown(attempt: Attempt): string {
   const x = buildExport(attempt);
+  /** Typed answers keep the student's formatting in the Markdown export. */
+  const formatted = (item: Item, key: string): Item => {
+    const a = attempt.answers[key];
+    return a?.type === 'typed' && a.html && item.answer ? { ...item, answer: htmlToMarkdown(a.html) } : item;
+  };
   const out: string[] = [];
   out.push(`# ${x.paper.title}`, '');
   const meta = [
@@ -57,10 +64,10 @@ export function toMarkdown(attempt: Attempt): string {
       if (q.parts) {
         if (q.text) out.push(q.text, '');
         for (const p of q.parts) {
-          out.push(`#### (${p.label}) — ${plural(p.marks, 'mark')}`, '', answerMd(p), '');
+          out.push(`#### (${p.label}) — ${plural(p.marks, 'mark')}`, '', answerMd(formatted(p, answerKey(q.id, p.label))), '');
         }
       } else {
-        out.push(answerMd(q), '');
+        out.push(answerMd(formatted(q, q.id)), '');
       }
     }
   });
