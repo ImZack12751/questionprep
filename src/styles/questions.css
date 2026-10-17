@@ -301,8 +301,80 @@
 }
 
 /* Math */
+.math-lines {
+  display: grid;
+  gap: var(--space-2);
+}
+.math-line-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.math-line {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+}
+.math-line-no {
+  grid-column: 1;
+  min-width: 1.5em;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-align: right;
+}
 .math-host {
+  grid-column: 2;
+  min-width: 0;
   min-height: 52px;
+}
+.math-line-remove {
+  grid-column: 3;
+  width: 32px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--muted);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.math-line-remove:hover {
+  border-color: var(--rule);
+  color: var(--danger);
+}
+.math-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.math-control {
+  padding: 4px 12px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.math-control:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.math-control.is-on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.math-hint {
+  color: var(--muted);
+  font-size: 0.78rem;
 }
 .math-input,
 math-field.math-input {
@@ -325,9 +397,22 @@ math-field.math-input:focus-within {
   outline: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
   outline-offset: 0;
 }
-math-field.math-input::part(menu-toggle),
 math-field.math-input::part(virtual-keyboard-toggle) {
   color: var(--muted);
+}
+/* The menu button took ~35px from every line and covered long expressions; the same
+   menu is still available from right-click / long-press. */
+math-field.math-input::part(menu-toggle) {
+  display: none;
+}
+/* Touch screens open the on-screen keyboard on focus, so its toggle only costs space. */
+@media (pointer: coarse) {
+  math-field.math-input::part(virtual-keyboard-toggle) {
+    display: none;
+  }
+  .math-hint {
+    display: none;
+  }
 }
 .math-fallback {
   width: 100%;
@@ -488,7 +573,7 @@ math-field.math-input::part(virtual-keyboard-toggle) {
 .rich th {
   background: var(--desk-2);
   font-weight: 700;
-  white-space: nowrap;
+  vertical-align: bottom;
 }
 .rich th,
 .rich td {

@@ -11,9 +11,11 @@ interface Props {
   label: string;
 }
 
+const NO_VALUES: string[] = [];
+
 /** Renders the question text with an inline input in place of each {{n}}. */
 export function FillBlankInput({ text, blanks, value, onChange, disabled, label }: Props) {
-  const values = value?.values ?? [];
+  const values = value?.values ?? NO_VALUES;
   const renderBlank = useCallback(
     (n: number) => {
       const v = values[n - 1] ?? '';

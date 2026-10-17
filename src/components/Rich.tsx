@@ -12,14 +12,15 @@ interface RichProps {
 
 /** Markdown + KaTeX text. Blanks are mounted into the rendered HTML with portals. */
 export function Rich({ text, inline, className, renderBlank }: RichProps) {
-  const html = useMemo(() => renderRich(text, { inline, blanks: !!renderBlank }), [text, inline, renderBlank !== undefined]);
+  const hasBlanks = renderBlank !== undefined;
+  const html = useMemo(() => renderRich(text, { inline, blanks: hasBlanks }), [text, inline, hasBlanks]);
   const ref = useRef<HTMLElement>(null);
   const [slots, setSlots] = useState<HTMLElement[]>([]);
 
   useLayoutEffect(() => {
-    if (!renderBlank || !ref.current) return setSlots([]);
+    if (!hasBlanks || !ref.current) return setSlots([]);
     setSlots([...ref.current.querySelectorAll<HTMLElement>('[data-blank]')]);
-  }, [html]);
+  }, [html, hasBlanks]);
 
   const Tag = inline ? 'span' : 'div';
   return (

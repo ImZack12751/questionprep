@@ -4,7 +4,11 @@ export type Answer =
   | { type: 'mcq'; selected: number[] }
   /** text is the plain-text version (used for exports); html keeps the student's formatting. */
   | { type: 'typed'; text: string; html?: string }
-  | { type: 'math'; latex: string }
+  /**
+   * latex holds every non-empty line joined with "\\" (what older versions stored, and what
+   * "answered" checks use); lines keeps each line of working as entered. Older answers have no lines.
+   */
+  | { type: 'math'; latex: string; lines?: string[] }
   | { type: 'fill_blank'; values: string[] };
 
 export type AttemptStatus = 'in_progress' | 'submitted';

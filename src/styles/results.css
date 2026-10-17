@@ -186,6 +186,12 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.review-math-line + .review-math-line {
+  margin-top: 2px;
+}
+.review-math-gap {
+  height: 0.8em;
+}
 .review-math .katex-display {
   margin: 0.2em 0;
   text-align: left;

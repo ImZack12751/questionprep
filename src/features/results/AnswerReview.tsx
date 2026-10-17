@@ -4,6 +4,7 @@ import { plural } from '../../lib/format';
 import { renderLatex } from '../../lib/richtext';
 import { plainToHtml, sanitizeAnswerHtml } from '../../lib/richAnswer';
 import { answerKey, isAnswered, optionLetter } from '../attempt/answers';
+import { visibleMathLines } from '../attempt/mathAnswer';
 import type { Answer, Attempt } from '../attempt/types';
 import type { Answerable } from '../paper/schema';
 import { ContextCards } from '../paper/ContextCard';
@@ -49,7 +50,15 @@ function ItemReview({ item, answer }: { item: Answerable; answer: Answer | undef
         ) : !answered ? (
           <NoAnswer />
         ) : item.type === 'math' && answer?.type === 'math' ? (
-          <div className="review-math" dangerouslySetInnerHTML={{ __html: renderLatex(answer.latex, true) }} />
+          <div className="review-math">
+            {visibleMathLines(answer).map((line, i) =>
+              line ? (
+                <div key={i} className="review-math-line" dangerouslySetInnerHTML={{ __html: renderLatex(line, true) }} />
+              ) : (
+                <div key={i} className="review-math-gap" aria-hidden />
+              ),
+            )}
+          </div>
         ) : answer?.type === 'typed' ? (
           <div
             className="review-typed"
@@ -70,49 +79,49 @@ export function AnswerReview({ attempt }: { attempt: Attempt }) {
       {attempt.paper.sections.map((s, si) => {
         const placed = placeContexts(attempt.paper, s, firsts[si]!);
         return (
-        <section key={si} className="review-section">
-          <h3 className="review-section-title">
-            <span>Section {si + 1}</span> {s.title}
-          </h3>
-          {s.questions.map((q) => {
-            n++;
-            const flagged = !!attempt.flags[q.id];
-            const contexts = placed.get(q.id) ?? [];
-            return (
-              <div key={q.id} className="review-group">
-              <ContextCards items={contexts} />
-              <article
-                className={`review-q ${flagged ? 'is-flagged' : ''}`}
-                aria-describedby={contexts.length ? contexts.map((c) => c.domId).join(' ') : undefined}
-              >
-                <header className="review-q-head">
-                  <span className="question-number">{n}</span>
-                  <span className="review-q-meta">
-                    {flagged && <span className="review-flag">Flagged</span>}
-                    <span className="marks">[{plural(q.marks, 'mark')}]</span>
-                  </span>
-                </header>
-                {q.type === 'multipart' ? (
-                  <>
-                    {q.text && <Rich text={q.text} className="question-text question-stem" />}
-                    {q.parts.map((p) => (
-                      <div key={p.label} className="review-part">
-                        <div className="review-part-head">
-                          <span className="part-label">({p.label})</span>
-                          <span className="marks">[{plural(p.marks, 'mark')}]</span>
-                        </div>
-                        <ItemReview item={p} answer={attempt.answers[answerKey(q.id, p.label)]} />
-                      </div>
-                    ))}
-                  </>
-                ) : (
-                  <ItemReview item={q} answer={attempt.answers[q.id]} />
-                )}
-              </article>
-              </div>
-            );
-          })}
-        </section>
+          <section key={si} className="review-section">
+            <h3 className="review-section-title">
+              <span>Section {si + 1}</span> {s.title}
+            </h3>
+            {s.questions.map((q) => {
+              n++;
+              const flagged = !!attempt.flags[q.id];
+              const contexts = placed.get(q.id) ?? [];
+              return (
+                <div key={q.id} className="review-group">
+                  <ContextCards items={contexts} />
+                  <article
+                    className={`review-q ${flagged ? 'is-flagged' : ''}`}
+                    aria-describedby={contexts.length ? contexts.map((c) => c.domId).join(' ') : undefined}
+                  >
+                    <header className="review-q-head">
+                      <span className="question-number">{n}</span>
+                      <span className="review-q-meta">
+                        {flagged && <span className="review-flag">Flagged</span>}
+                        <span className="marks">[{plural(q.marks, 'mark')}]</span>
+                      </span>
+                    </header>
+                    {q.type === 'multipart' ? (
+                      <>
+                        {q.text && <Rich text={q.text} className="question-text question-stem" />}
+                        {q.parts.map((p) => (
+                          <div key={p.label} className="review-part">
+                            <div className="review-part-head">
+                              <span className="part-label">({p.label})</span>
+                              <span className="marks">[{plural(p.marks, 'mark')}]</span>
+                            </div>
+                            <ItemReview item={p} answer={attempt.answers[answerKey(q.id, p.label)]} />
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <ItemReview item={q} answer={attempt.answers[q.id]} />
+                    )}
+                  </article>
+                </div>
+              );
+            })}
+          </section>
         );
       })}
     </div>

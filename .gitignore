@@ -6,3 +6,5 @@ dist
 .DS_Store
 test-results
 public/dictionaries
+test-results
+playwright-report

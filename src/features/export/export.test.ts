@@ -95,3 +95,19 @@ describe('contexts in exports', () => {
     expect(md).toContain('> | Year | Population (millions) |');
   });
 });
+
+describe('multi-line maths answers in exports', () => {
+  const lines = ['\\frac{2.1-1.2}{1.2}\\times100', '=75\\%'];
+  const a = attemptFor(sources, { '4::a': { type: 'math', latex: lines.join(' \\\\ '), lines } });
+  it('JSON puts one line of working per line', () => {
+    expect(buildExport(a).sections[1]!.questions[0]!.parts![0]!.answer).toBe('\\frac{2.1-1.2}{1.2}\\times100\n=75\\%');
+  });
+  it('Markdown shows each line as its own maths', () => {
+    expect(toMarkdown(a)).toContain('**Answer:**\n\n$\\frac{2.1-1.2}{1.2}\\times100$  \n$=75\\%$');
+  });
+  it('legacy single-line maths answers export as before', () => {
+    const legacy = attemptFor(maths, { A1: { type: 'math', latex: 'x=12' } });
+    expect(buildExport(legacy).sections[0]!.questions[0]!.answer).toBe('x=12');
+    expect(toMarkdown(legacy)).toContain('**Answer:** $x=12$');
+  });
+});

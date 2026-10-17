@@ -31,7 +31,10 @@ function answerMd(item: Item): string {
     return `${item.text}\n\n${opts}\n\n**Answer:** ${a ? (Array.isArray(a) ? a.join('; ') : a) : '_Not answered_'}`;
   }
   if (item.type === 'math') {
-    return `${item.text}\n\n**Answer:** ${typeof a === 'string' ? `$${a}$` : '_Not answered_'}`;
+    if (typeof a !== 'string') return `${item.text}\n\n**Answer:** _Not answered_`;
+    const lines = a.split('\n');
+    if (lines.length === 1) return `${item.text}\n\n**Answer:** $${a}$`;
+    return `${item.text}\n\n**Answer:**\n\n${lines.map((l) => (l.trim() ? `$${l}$` : '')).join('  \n')}`;
   }
   return `${item.text}\n\n**Answer:**\n\n${typeof a === 'string' ? quote(a) : '_Not answered_'}`;
 }

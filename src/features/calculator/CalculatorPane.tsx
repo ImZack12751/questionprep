@@ -47,6 +47,7 @@ export function CalculatorPane({ api, kind, visible, initialState, onState, layo
       calc.current = null;
     };
     // The instance lives for the whole exam; initial state is only applied once.
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- the instance lives for the whole exam; saved state is applied once
   }, [api, kind]);
 
   // The graphing calculator has a native dark rendering; the scientific one stays light.

@@ -1,6 +1,6 @@
 import { Marked } from 'marked';
 import DOMPurify from 'dompurify';
-import katex from 'katex';
+import { renderToString } from 'katex';
 
 const marked = new Marked({ gfm: true, breaks: true, async: false });
 
@@ -34,7 +34,7 @@ function extractMath(src: string): { text: string; chunks: MathChunk[] } {
 }
 
 function renderTex({ tex, display }: MathChunk): string {
-  return katex.renderToString(tex, { displayMode: display, throwOnError: false, output: 'htmlAndMathml', strict: false });
+  return renderToString(tex, { displayMode: display, throwOnError: false, output: 'htmlAndMathml', strict: false });
 }
 
 export interface RichOptions {

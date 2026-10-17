@@ -1,4 +1,5 @@
 import { answerKey, attemptSummary, optionLetter, totalMarks } from '../attempt/answers';
+import { visibleMathLines } from '../attempt/mathAnswer';
 import type { Answer, Attempt } from '../attempt/types';
 
 import type { Answerable, Question } from '../paper/schema';
@@ -65,8 +66,11 @@ export function exportAnswer(item: Answerable, a: Answer | undefined): ExportedA
     }
     case 'typed':
       return a.text.trim() ? a.text : null;
-    case 'math':
-      return a.latex.trim() ? a.latex : null;
+    case 'math': {
+      // One LaTeX line per line of working, separated by newlines.
+      const lines = visibleMathLines(a);
+      return lines.length ? lines.join('\n') : null;
+    }
     case 'fill_blank': {
       const n = item.type === 'fill_blank' ? item.blanks : a.values.length;
       const vals = Array.from({ length: n }, (_, i) => a.values[i] ?? '');

@@ -1,4 +1,7 @@
-let promise: Promise<typeof import('mathlive')> | undefined;
+type MathLive = typeof import('mathlive');
+
+let promise: Promise<MathLive> | undefined;
+let loaded: MathLive | undefined;
 
 /** MathLive is large, so it's only loaded once an exam with math answers opens. */
 export function loadMathLive() {
@@ -11,7 +14,11 @@ export function loadMathLive() {
     kb.addEventListener('geometrychange', () => {
       document.body.style.paddingBottom = kb.visible ? `${kb.boundingRect.height}px` : '';
     });
+    loaded = ml;
     return ml;
   });
   return promise;
 }
+
+/** The MathLive module if it has already loaded, so new fields can be created synchronously. */
+export const mathLiveIfLoaded = () => loaded;

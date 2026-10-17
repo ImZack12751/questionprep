@@ -54,16 +54,16 @@ export function QuestionNavigator({ attempt, currentSection, activeQuestionId, o
               </span>
             </button>
             <div className="qnav-grid">
-              {items.map(({ q, n, status, flagged }) => (
+              {items.map(({ q, n: number, status, flagged: isFlagged }) => (
                 <button
                   key={q.id}
                   type="button"
-                  className={`qnav-q is-${status} ${flagged ? 'is-flagged' : ''} ${activeQuestionId === q.id && si === currentSection ? 'is-active' : ''}`}
+                  className={`qnav-q is-${status} ${isFlagged ? 'is-flagged' : ''} ${activeQuestionId === q.id && si === currentSection ? 'is-active' : ''}`}
                   onClick={() => onJump(si, q.id)}
-                  aria-label={`Question ${n}, ${STATUS_LABEL[status]}${flagged ? ', flagged' : ''}`}
-                  title={`Question ${n} · ${q.marks} mark${q.marks === 1 ? '' : 's'}`}
+                  aria-label={`Question ${number}, ${STATUS_LABEL[status]}${isFlagged ? ', flagged' : ''}`}
+                  title={`Question ${number} · ${q.marks} mark${q.marks === 1 ? '' : 's'}`}
                 >
-                  {n}
+                  {number}
                 </button>
               ))}
             </div>

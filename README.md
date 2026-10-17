@@ -8,7 +8,7 @@ It runs entirely in the browser. There's no backend, no login and no grading. Pa
 
 - **Library**: upload `.json` papers with the button or by dragging them anywhere on the page. Mistakes in a file are reported with their location, e.g. `Section 2, question 3 ("q4"): mcq needs at least 2 options`. There are two built-in samples and a **Copy AI prompt** button.
 - **Exam**: countdown that turns amber under 5 minutes and red under 1, auto-submit at zero, a pause button that hides the paper, sections as tabs with answered/total counts, and flags for review.
-- **Answer types**: multiple choice (single or multiple answers), free text with a formatting toolbar (bold, italic, underline, bulleted and numbered lists; Ctrl/⌘+B/I/U) and a spellchecker that accepts both British and American spelling, maths (MathLive with on-screen keyboard; stored as LaTeX), fill-in-the-blank (inline inputs) and multipart questions.
+- **Answer types**: multiple choice (single or multiple answers), free text with a formatting toolbar (bold, italic, underline, bulleted and numbered lists; Ctrl/⌘+B/I/U) and a spellchecker that accepts both British and American spelling, maths (MathLive with on-screen keyboard, several lines of working, stored as LaTeX), fill-in-the-blank (inline inputs) and multipart questions.
 - **Calculator**: Desmos graphing and scientific calculators in a resizable drawer on the right edge. The calculator keeps its state while the drawer is closed and across reloads.
 - **Autosave and resume**: every change is saved. The timer counts *active* exam time and checkpoints it every few seconds, so time while the tab is closed doesn't count. If the tab closes or the browser crashes, choose **Resume** on the paper's page.
 - **Export**: JSON (for AI marking), Markdown, and PDF via the browser's print dialog, with maths rendered.
@@ -30,7 +30,9 @@ Other scripts:
 | --- | --- |
 | `npm run build` | Type-checks and builds to `dist/` |
 | `npm run preview` | Serves the production build locally |
-| `npm test` | Unit tests for schema validation and export (Vitest) |
+| `npm test` | Unit and component tests (Vitest) |
+| `npm run test:e2e` | Browser tests for the maths input and context cards (Playwright; run `npx playwright install chromium` once, or set `PLAYWRIGHT_CHROMIUM_EXECUTABLE`) |
+| `npm run lint` | Oxlint, with TypeScript and React Hooks rules |
 | `npm run typecheck` | TypeScript only |
 
 ### Environment variables
@@ -77,7 +79,7 @@ The calculator script loads from `desmos.com`, so the calculator needs an intern
 | --- | --- | --- |
 | `mcq` | `id`, `marks`, `text`, `options: string[]`, `allowMultiple?: boolean` | at least 2 options; `allowMultiple` defaults to `false` (radio buttons) |
 | `typed` | `id`, `marks`, `text` | free-text answer |
-| `math` | `id`, `marks`, `text` | answer entered with MathLive, stored as LaTeX |
+| `math` | `id`, `marks`, `text` | answer entered with MathLive, one field per line of working, stored as LaTeX |
 | `fill_blank` | `id`, `marks`, `text`, `blanks: number` | `text` must contain `{{1}}` … `{{blanks}}`; each becomes an inline input |
 | `multipart` | `id`, `text`, `parts: Part[]` | `marks` is optional and always recalculated as the sum of the parts |
 
@@ -210,7 +212,7 @@ The JSON export is designed to be pasted straight into an AI for marking. It inc
 
 - `mcq`: the chosen option as `"B. text"` (an array when `allowMultiple`)
 - `typed`: plain text. Formatting is left out of the JSON (lists stay as `- ` / `1. ` lines), but it's kept on the results page, in the PDF and in the Markdown export
-- `math`: a LaTeX string
+- `math`: a LaTeX string, with one line of working per line (separated by `\n`)
 - `fill_blank`: one string per blank
 - `contexts` (top level) and `contextIds` (per question) when the paper has sources
 - `null` when unanswered; multipart questions have a `parts` array with an `answer` for each part
@@ -249,6 +251,17 @@ src/
   styles/              CSS with design tokens, one file per area, plus print.css
 samples/               example papers (also bundled for the "Load sample" button)
 ```
+
+## Maths answers
+
+Maths answers can have several lines of working. Each line is its own MathLive field:
+
+- **Enter** (or the on-screen keyboard's return key, or **+ New line**) starts a new line.
+- **↑ / ↓** move between lines, and **Backspace** on an empty line removes it.
+- **Text** switches the current line to plain words, so that "integral" isn't turned into ∫.
+- The space bar inserts a thin space.
+
+Answers are saved as `{ "type": "math", "latex": "line1 \\\\ line2", "lines": ["line1", "line2"] }`. Answers saved before multi-line support have only `latex` and load as a single line.
 
 ## Spellchecking
 

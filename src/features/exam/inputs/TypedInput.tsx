@@ -31,6 +31,7 @@ export function TypedInput({ value, onChange, disabled, labelledBy }: Props) {
     if (!el) return;
     el.innerHTML = value?.html ? sanitizeAnswerHtml(value.html) : plainToHtml(value?.text ?? '');
     // Set once on mount; later edits come from the user.
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- the editor owns its content after mount
   }, []);
 
   const emit = useCallback(() => {
