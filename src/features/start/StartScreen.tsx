@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { BrandMark } from '../../components/BrandMark';
+import { AppShell, PageHeader } from '../../components/AppShell';
 import { Dialog } from '../../components/Dialog';
 import { Icon } from '../../components/Icon';
 import { Rich } from '../../components/Rich';
-import { ThemeToggle } from '../../components/ThemeToggle';
 import { getPaper, listAttempts, saveAttempt } from '../../lib/db';
 import { formatClock, plural } from '../../lib/format';
 import { href, navigate } from '../../lib/router';
@@ -24,15 +23,17 @@ export function StartScreen({ paperId }: { paperId: string }) {
     });
   }, [paperId]);
 
-  if (rec === undefined) return <div className="page" />;
+  if (rec === undefined) return <AppShell>{null}</AppShell>;
   if (rec === null) {
     return (
-      <div className="page center-message">
-        <p>This paper isn't in your library any more.</p>
-        <a className="btn btn-ghost" href={href({ name: 'home' })}>
-          Back to library
-        </a>
-      </div>
+      <AppShell>
+        <div className="center-message">
+          <p>This paper isn't in your library any more.</p>
+          <a className="btn btn-ghost" href={href({ name: 'home' })}>
+            Back to library
+          </a>
+        </div>
+      </AppShell>
     );
   }
 
@@ -46,19 +47,18 @@ export function StartScreen({ paperId }: { paperId: string }) {
     navigate({ name: 'exam', attemptId: a.id });
   }
 
+  const marks = totalMarks(paper);
+
   return (
-    <div className="page start">
-      <header className="site-header">
-        <BrandMark />
-        <ThemeToggle />
-      </header>
-      <main className="start-main">
-        <a className="back-link" href={href({ name: 'home' })}>
-          <Icon name="back" size={16} /> Library
-        </a>
+    <AppShell>
+      <PageHeader
+        crumbs={[{ label: 'Library', href: href({ name: 'home' }) }, { label: paper.title }]}
+        eyebrow={paper.subject || 'Question paper'}
+        title={paper.title}
+      />
+
+      <div className="two-col">
         <article className="sheet start-sheet">
-          <p className="eyebrow">{paper.subject || 'Question paper'}</p>
-          <h1 className="start-title">{paper.title}</h1>
           <dl className="start-facts">
             <div>
               <dt>Time allowed</dt>
@@ -66,7 +66,7 @@ export function StartScreen({ paperId }: { paperId: string }) {
             </div>
             <div>
               <dt>Total marks</dt>
-              <dd>{totalMarks(paper)}</dd>
+              <dd>{marks}</dd>
             </div>
             <div>
               <dt>Questions</dt>
@@ -76,45 +76,82 @@ export function StartScreen({ paperId }: { paperId: string }) {
             </div>
           </dl>
 
-          {paper.instructions && (
-            <section className="start-instructions">
-              <h2>Instructions</h2>
-              <Rich text={paper.instructions} />
-            </section>
-          )}
+          <section className="start-block">
+            <h2 className="start-block-title">Instructions</h2>
+            {paper.instructions ? (
+              <Rich text={paper.instructions} className="start-instructions" />
+            ) : (
+              <p className="start-instructions">Answer all questions in the time allowed.</p>
+            )}
+          </section>
 
-          <ol className="start-sections">
-            {paper.sections.map((s, i) => (
-              <li key={i}>
-                <span>{s.title}</span>
-                <span className="muted">
-                  {plural(s.questions.length, 'question')} · {s.questions.reduce((t, q) => t + q.marks, 0)} marks
-                </span>
-              </li>
-            ))}
-          </ol>
+          <section className="start-block">
+            <h2 className="start-block-title">Contents</h2>
+            <table className="contents-table">
+              <thead>
+                <tr>
+                  <th scope="col">Section</th>
+                  <th scope="col">Questions</th>
+                  <th scope="col">Marks</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paper.sections.map((s, i) => (
+                  <tr key={i}>
+                    <td>
+                      <span className="muted">{i + 1}.</span> {s.title}
+                    </td>
+                    <td>{s.questions.length}</td>
+                    <td>{s.questions.reduce((t, q) => t + q.marks, 0)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td>Total</td>
+                  <td>{questionCount}</td>
+                  <td>{marks}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </section>
+        </article>
 
-          <div className="start-actions">
+        <aside className="panel sticky-aside" aria-label="Begin">
+          <div className="panel-section">
+            <h2 className="panel-title">{unfinished ? 'Attempt in progress' : 'Ready to begin'}</h2>
             {unfinished ? (
               <>
-                <a className="btn btn-primary btn-lg" href={href({ name: 'exam', attemptId: unfinished.id })}>
-                  <Icon name="play" /> Resume · {formatClock(unfinished.durationMs - unfinished.elapsedMs)} left
+                <p className="begin-time">
+                  {formatClock(unfinished.durationMs - unfinished.elapsedMs)} <span>remaining</span>
+                </p>
+                <a className="btn btn-primary btn-lg btn-block" href={href({ name: 'exam', attemptId: unfinished.id })}>
+                  <Icon name="play" /> Resume
                 </a>
-                <button type="button" className="btn btn-ghost" onClick={() => setConfirmNew(true)}>
+                <button type="button" className="btn btn-ghost btn-block" onClick={() => setConfirmNew(true)}>
                   Start a new attempt
                 </button>
               </>
             ) : (
-              <button type="button" className="btn btn-primary btn-lg" onClick={start}>
-                <Icon name="play" /> Start{attempts.length ? ' new attempt' : ''}
-              </button>
+              <>
+                <p className="begin-time">
+                  {paper.durationMinutes}:00 <span>minutes</span>
+                </p>
+                <button type="button" className="btn btn-primary btn-lg btn-block" onClick={start}>
+                  <Icon name="play" /> Start{attempts.length ? ' new attempt' : ''}
+                </button>
+              </>
             )}
-            <p className="muted start-note">The timer starts when you select Start. You may pause the exam at any time.</p>
+            <p className="muted begin-note">The timer starts when you select Start. You may pause the exam at any time.</p>
           </div>
-        </article>
-
-        <AttemptHistory attempts={attempts} />
-      </main>
+          <div className="panel-section">
+            <h2 className="panel-title">
+              Attempts <span className="count">{attempts.length}</span>
+            </h2>
+            <AttemptHistory attempts={attempts} />
+          </div>
+        </aside>
+      </div>
 
       <Dialog
         open={confirmNew}
@@ -133,6 +170,6 @@ export function StartScreen({ paperId }: { paperId: string }) {
       >
         <p>Your unfinished attempt will be submitted as it is now, so you can still view and export it later.</p>
       </Dialog>
-    </div>
+    </AppShell>
   );
 }

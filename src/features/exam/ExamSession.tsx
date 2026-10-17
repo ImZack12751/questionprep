@@ -8,6 +8,8 @@ import type { Attempt } from '../attempt/types';
 import { ExamTopBar } from './ExamTopBar';
 import { PauseOverlay } from './PauseOverlay';
 import { QuestionBlock } from './QuestionBlock';
+import { QuestionNavigator } from './QuestionNavigator';
+import { useActiveQuestion } from './useActiveQuestion';
 import { SectionTabs } from './SectionTabs';
 import { SubmitDialog } from './SubmitDialog';
 import { TimeUpDialog } from './TimeUpDialog';
@@ -21,6 +23,7 @@ export function ExamSession({ initial }: { initial: Attempt }) {
   const [confirming, setConfirming] = useState(false);
   const [timeUp, setTimeUp] = useState(false);
   const [calcOpen, setCalcOpen] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   const [calcWidth, setCalcWidth] = useDrawerWidth();
   const locked = attempt.status !== 'in_progress';
 
@@ -51,10 +54,21 @@ export function ExamSession({ initial }: { initial: Attempt }) {
     [setSection],
   );
 
+  const [activeQuestionId, setActiveQuestionId] = useActiveQuestion(sectionIndex);
+
   function jumpTo(si: number, qid: string) {
     setConfirming(false);
+    setNavOpen(false);
+    const sameSection = si === sectionIndex;
     setSection(si);
-    requestAnimationFrame(() => document.getElementById(`question-${qid}`)?.scrollIntoView({ block: 'start', behavior: 'smooth' }));
+    // Wait for a section switch to render before scrolling.
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() =>
+        document.getElementById(`question-${qid}`)?.scrollIntoView({ block: 'start', behavior: sameSection ? 'smooth' : 'auto' }),
+      ),
+    );
+    // The last questions may not reach the top of the screen, so mark the target directly.
+    setActiveQuestionId(qid);
   }
 
   async function confirmSubmit() {
@@ -86,8 +100,24 @@ export function ExamSession({ initial }: { initial: Attempt }) {
       />
 
       <div className="exam-layout">
+        <aside className={`exam-nav ${navOpen ? 'is-open' : ''}`} aria-label="Question navigator" aria-hidden={paused}>
+          <QuestionNavigator
+            attempt={attempt}
+            currentSection={sectionIndex}
+            activeQuestionId={activeQuestionId}
+            onJump={jumpTo}
+            onSelectSection={(i) => {
+              setNavOpen(false);
+              selectSection(i);
+            }}
+          />
+        </aside>
+        {navOpen && <div className="exam-nav-scrim" onClick={() => setNavOpen(false)} aria-hidden />}
         <main className="exam-main" aria-hidden={paused}>
-          <nav className="exam-tabs-wrap">
+          <nav className="exam-tabs-wrap" aria-label="Sections">
+            <button type="button" className="btn btn-ghost exam-nav-toggle" aria-expanded={navOpen} onClick={() => setNavOpen((o) => !o)}>
+              Questions
+            </button>
             <SectionTabs paper={paper} attempt={attempt} current={sectionIndex} onSelect={selectSection} />
           </nav>
           <section id="section-panel" role="tabpanel" aria-labelledby={`tab-${sectionIndex}`} className="sheet exam-sheet">

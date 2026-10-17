@@ -35,9 +35,12 @@
     print-color-adjust: exact;
   }
 
-  .results-main {
+  .app-main {
     max-width: none;
     padding: 0;
+  }
+  .two-col {
+    display: block;
   }
   .sheet.print-doc {
     padding: 0;

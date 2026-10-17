@@ -77,16 +77,6 @@
   text-underline-offset: 3px;
 }
 
-/* Header */
-.site-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: var(--space-5) var(--space-5) 0;
-}
-
 .brand {
   display: inline-flex;
   align-items: center;
@@ -229,16 +219,183 @@
   color: var(--amber);
 }
 
-.back-link {
-  display: inline-flex;
+
+/* App shell */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid var(--rule-strong);
+  background: var(--surface);
+}
+.app-bar-inner,
+.app-footer-inner,
+.app-main {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: var(--space-5);
+  padding-right: var(--space-5);
+}
+.app-bar-inner {
+  display: flex;
   align-items: center;
-  gap: var(--space-1);
-  margin-bottom: var(--space-4);
+  gap: var(--space-6);
+  height: var(--topbar-h);
+}
+.app-nav {
+  display: flex;
+  align-self: stretch;
+  gap: var(--space-5);
+}
+.app-nav a {
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid transparent;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 600;
   text-decoration: none;
 }
-.back-link:hover {
+.app-nav a:hover {
   color: var(--ink);
+}
+.app-nav a[aria-current='page'] {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
+}
+.app-bar-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+.app-main {
+  flex: 1;
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-8);
+}
+.app-footer {
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.app-footer-inner {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-4);
+}
+
+/* Page header */
+.page-header {
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--rule);
+}
+.page-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-6);
+}
+.page-header-text {
+  min-width: 0;
+  max-width: 760px;
+}
+.page-title {
+  margin-top: var(--space-1);
+  font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.page-description {
+  margin-top: var(--space-2);
+  color: var(--ink-soft);
+}
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.crumbs li + li::before {
+  content: '/';
+  margin-right: var(--space-2);
+  color: var(--rule-strong);
+}
+.crumbs a {
+  color: var(--muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+.crumbs a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.crumbs [aria-current] {
+  overflow: hidden;
+  max-width: 50ch;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Panels (sidebars and boxed sections) */
+.panel {
+  border: 1px solid var(--sheet-edge);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.panel-section {
+  padding: var(--space-4) var(--space-5);
+}
+.panel-section + .panel-section {
+  border-top: 1px solid var(--rule);
+}
+.panel-title {
+  margin-bottom: var(--space-3);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.two-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  align-items: start;
+  gap: var(--space-6);
+}
+.two-col-left {
+  grid-template-columns: 320px minmax(0, 1fr);
+}
+.sticky-aside {
+  position: sticky;
+  top: calc(var(--topbar-h) + var(--space-5));
+}
+@media (max-width: 1000px) {
+  .two-col,
+  .two-col-left {
+    grid-template-columns: 1fr;
+  }
+  .sticky-aside {
+    position: static;
+  }
 }

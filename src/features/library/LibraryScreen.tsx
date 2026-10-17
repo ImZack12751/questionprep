@@ -1,8 +1,7 @@
 import { useRef, useState } from 'react';
-import { BrandMark } from '../../components/BrandMark';
+import { AppShell, PageHeader } from '../../components/AppShell';
 import { Dialog } from '../../components/Dialog';
 import { Icon } from '../../components/Icon';
-import { ThemeToggle } from '../../components/ThemeToggle';
 import { useToast } from '../../components/Toast';
 import { copyText } from '../../lib/clipboard';
 import { validatePaper, parsePaperJson } from '../paper/validate';
@@ -54,29 +53,19 @@ export function LibraryScreen() {
   }
 
   return (
-    <div className="page library">
-      <header className="site-header">
-        <BrandMark />
-        <ThemeToggle />
-      </header>
-
-      <main className="library-main">
-        <section className="library-hero">
-          <div>
-            <h1>Practice papers</h1>
-            <p className="lede">
-              Upload a question paper in JSON format and sit it under timed exam conditions. Papers and attempts are stored in this browser
-              only.
-            </p>
-          </div>
-          <div className="library-actions">
-            <button type="button" className="btn btn-primary" onClick={() => fileInput.current?.click()}>
-              <Icon name="upload" /> Upload paper
-            </button>
+    <AppShell>
+      <PageHeader
+        title="Practice papers"
+        description="Upload a question paper in JSON format and sit it under timed exam conditions."
+        actions={
+          <>
+            <SampleMenu onPick={loadSample} />
             <button type="button" className="btn btn-ghost" onClick={copyPrompt}>
               <Icon name="sparkle" /> Copy AI prompt
             </button>
-            <SampleMenu onPick={loadSample} />
+            <button type="button" className="btn btn-primary" onClick={() => fileInput.current?.click()}>
+              <Icon name="upload" /> Upload paper
+            </button>
             <input
               ref={fileInput}
               type="file"
@@ -88,30 +77,35 @@ export function LibraryScreen() {
                 e.target.value = '';
               }}
             />
-          </div>
-        </section>
+          </>
+        }
+      />
 
-        <UploadErrors items={errors} onDismiss={() => setErrors([])} />
+      <UploadErrors items={errors} onDismiss={() => setErrors([])} />
 
-        {entries === null ? null : entries.length === 0 ? (
-          <button type="button" className="empty-drop" onClick={() => fileInput.current?.click()}>
-            <Icon name="upload" size={28} />
-            <strong>No papers uploaded</strong>
-            <span>Drop a .json file anywhere on this page or click to choose one. You can also load a sample, or copy the AI prompt to generate a paper.</span>
-          </button>
-        ) : (
-          <section aria-label="Saved papers">
+      {entries === null ? null : entries.length === 0 ? (
+        <button type="button" className="empty-drop" onClick={() => fileInput.current?.click()}>
+          <Icon name="upload" size={28} />
+          <strong>No papers uploaded</strong>
+          <span>Drop a .json file anywhere on this page or click to choose one. You can also load a sample, or copy the AI prompt to generate a paper.</span>
+        </button>
+      ) : (
+        <section aria-label="Saved papers">
+          <div className="list-toolbar">
             <h2 className="section-label">
               Saved papers <span>{entries.length}</span>
             </h2>
-            <div className="paper-grid">
-              {entries.map((e) => (
-                <PaperCard key={e.record.id} entry={e} onDelete={() => setPendingDelete(e)} />
-              ))}
-            </div>
-          </section>
-        )}
-      </main>
+            <p className="muted list-hint">
+              <Icon name="upload" size={14} /> Drag a .json file anywhere on the page to upload it
+            </p>
+          </div>
+          <div className="paper-grid">
+            {entries.map((e) => (
+              <PaperCard key={e.record.id} entry={e} onDelete={() => setPendingDelete(e)} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {dragging && (
         <div className="drop-overlay" aria-hidden>
@@ -152,6 +146,6 @@ export function LibraryScreen() {
           anything you want to keep first.
         </p>
       </Dialog>
-    </div>
+    </AppShell>
   );
 }

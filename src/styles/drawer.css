@@ -1,7 +1,9 @@
 /* Desktop: the open drawer pushes the paper left instead of covering it. */
 @media (min-width: 1100px) {
   .exam.calc-open .exam-layout {
-    padding-right: var(--calc-w);
+    max-width: none;
+    margin: 0;
+    padding-right: calc(var(--calc-w) + var(--space-5));
   }
 }
 

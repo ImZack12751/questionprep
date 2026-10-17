@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { BrandMark } from '../../components/BrandMark';
+import { AppShell, PageHeader } from '../../components/AppShell';
 import { Icon } from '../../components/Icon';
-import { ThemeToggle } from '../../components/ThemeToggle';
 import { useToast } from '../../components/Toast';
 import { copyText, downloadFile, slugify } from '../../lib/clipboard';
 import { getAttempt } from '../../lib/db';
@@ -24,15 +23,17 @@ export function ResultsScreen({ attemptId }: { attemptId: string }) {
     });
   }, [attemptId]);
 
-  if (attempt === undefined) return <div className="page" />;
+  if (attempt === undefined) return <AppShell>{null}</AppShell>;
   if (attempt === null) {
     return (
-      <div className="page center-message">
-        <p>This attempt couldn't be found.</p>
-        <a className="btn btn-ghost" href={href({ name: 'home' })}>
-          Back to library
-        </a>
-      </div>
+      <AppShell>
+        <div className="center-message">
+          <p>This attempt couldn't be found.</p>
+          <a className="btn btn-ghost" href={href({ name: 'home' })}>
+            Back to library
+          </a>
+        </div>
+      </AppShell>
     );
   }
 
@@ -40,90 +41,91 @@ export function ResultsScreen({ attemptId }: { attemptId: string }) {
   const s = attemptSummary(attempt);
   const base = `${slugify(paper.title)}-${new Date(attempt.startedAt).toISOString().slice(0, 10)}`;
 
+  const jsonCopy = async () => toast((await copyText(toJson(attempt))) ? 'JSON copied — paste it into Claude to get it marked' : 'Copy failed');
+  const mdCopy = async () => toast((await copyText(toMarkdown(attempt))) ? 'Markdown copied' : 'Copy failed');
+
   return (
-    <div className="page results">
-      <header className="site-header no-print">
-        <BrandMark />
-        <ThemeToggle />
-      </header>
-      <main className="results-main">
-        <a className="back-link no-print" href={href({ name: 'paper', paperId: attempt.paperId })}>
-          <Icon name="back" size={16} /> Paper &amp; attempts
-        </a>
+    <AppShell>
+      <PageHeader
+        crumbs={[
+          { label: 'Library', href: href({ name: 'home' }) },
+          { label: paper.title, href: href({ name: 'paper', paperId: attempt.paperId }) },
+          { label: 'Results' },
+        ]}
+        eyebrow={attempt.autoSubmitted ? 'Time ran out — submitted automatically' : 'Submitted'}
+        title={paper.title}
+        description={attempt.submittedAt ? `Submitted ${formatDate(attempt.submittedAt)}` : undefined}
+        actions={
+          <a className="btn btn-ghost" href={href({ name: 'paper', paperId: attempt.paperId })}>
+            Attempt again
+          </a>
+        }
+      />
 
-        <section className="results-hero no-print">
-          <p className="eyebrow">{attempt.autoSubmitted ? 'Time ran out — submitted automatically' : 'Submitted'}</p>
-          <h1>{paper.title}</h1>
-          <p className="muted">{attempt.submittedAt ? formatDate(attempt.submittedAt) : ''}</p>
-          <dl className="stats">
-            <div>
-              <dt>Time taken</dt>
-              <dd>{formatDuration(attempt.elapsedMs)}</dd>
-              <span className="muted">of {paper.durationMinutes} min</span>
-            </div>
-            <div>
-              <dt>Answered</dt>
-              <dd>
-                {s.answered}
-                <small>/{s.total}</small>
-              </dd>
-              <span className="muted">{s.partial ? `${s.partial} partly answered` : 'questions'}</span>
-            </div>
-            <div>
-              <dt>Flagged</dt>
-              <dd>{s.flagged}</dd>
-              <span className="muted">for review</span>
-            </div>
-            <div>
-              <dt>Marks available</dt>
-              <dd>{totalMarks(paper)}</dd>
-              <span className="muted">not graded here</span>
-            </div>
-          </dl>
-        </section>
-
-        <section className="export-panel no-print" aria-labelledby="export-title">
-          <div>
-            <h2 id="export-title">Export</h2>
-            <p className="muted">
-              Answers are not marked in Questionprep. Export the JSON and paste it into Claude or another AI to have your answers marked.
-            </p>
-          </div>
-          <div className="export-actions">
-            <div className="export-option">
-              <button type="button" className="btn btn-primary" onClick={() => downloadFile(`${base}.json`, toJson(attempt), 'application/json')}>
-                <Icon name="download" /> JSON
-              </button>
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                onClick={async () => toast((await copyText(toJson(attempt))) ? 'JSON copied — paste it into Claude to get it marked' : 'Copy failed')}
-              >
-                <Icon name="copy" size={15} /> Copy
-              </button>
-              <p>Structured, for AI marking</p>
-            </div>
-            <div className="export-option">
-              <button type="button" className="btn btn-ghost" onClick={() => downloadFile(`${base}.md`, toMarkdown(attempt), 'text/markdown')}>
-                <Icon name="download" /> Markdown
-              </button>
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                onClick={async () => toast((await copyText(toMarkdown(attempt))) ? 'Markdown copied' : 'Copy failed')}
-              >
-                <Icon name="copy" size={15} /> Copy
-              </button>
-              <p>Readable notes</p>
-            </div>
-            <div className="export-option">
-              <button type="button" className="btn btn-ghost" onClick={() => window.print()}>
-                <Icon name="printer" /> PDF
-              </button>
-              <p>Print, then “Save as PDF”</p>
+      <div className="two-col two-col-left">
+        <aside className="panel sticky-aside no-print" aria-label="Summary and export">
+          <div className="panel-section">
+            <h2 className="panel-title">Summary</h2>
+            <dl className="summary-list">
+              <div>
+                <dt>Time taken</dt>
+                <dd>
+                  {formatDuration(attempt.elapsedMs)} <span>of {paper.durationMinutes} min</span>
+                </dd>
+              </div>
+              <div>
+                <dt>Answered</dt>
+                <dd>
+                  {s.answered}/{s.total}
+                  {s.partial ? <span>{s.partial} partly</span> : null}
+                </dd>
+              </div>
+              <div>
+                <dt>Flagged</dt>
+                <dd>{s.flagged}</dd>
+              </div>
+              <div>
+                <dt>Marks available</dt>
+                <dd>
+                  {totalMarks(paper)} <span>not graded</span>
+                </dd>
+              </div>
+            </dl>
+            <div className="progress" aria-hidden>
+              <span style={{ width: `${s.total ? (s.answered / s.total) * 100 : 0}%` }} />
             </div>
           </div>
-        </section>
+          <div className="panel-section">
+            <h2 className="panel-title">Export</h2>
+            <p className="muted export-note">Answers are not marked here. Copy the JSON into Claude or another AI to have them marked.</p>
+            <div className="export-rows">
+              <div className="export-row">
+                <button type="button" className="btn btn-primary" onClick={() => downloadFile(`${base}.json`, toJson(attempt), 'application/json')}>
+                  <Icon name="download" size={16} /> JSON
+                </button>
+                <button type="button" className="btn btn-ghost btn-icon-text" onClick={jsonCopy}>
+                  <Icon name="copy" size={15} /> Copy
+                </button>
+                <span className="export-desc">For AI marking</span>
+              </div>
+              <div className="export-row">
+                <button type="button" className="btn btn-ghost" onClick={() => downloadFile(`${base}.md`, toMarkdown(attempt), 'text/markdown')}>
+                  <Icon name="download" size={16} /> Markdown
+                </button>
+                <button type="button" className="btn btn-ghost btn-icon-text" onClick={mdCopy}>
+                  <Icon name="copy" size={15} /> Copy
+                </button>
+                <span className="export-desc">Readable notes</span>
+              </div>
+              <div className="export-row">
+                <button type="button" className="btn btn-ghost" onClick={() => window.print()}>
+                  <Icon name="printer" size={16} /> PDF
+                </button>
+                <span className="export-desc">Print, then “Save as PDF”</span>
+              </div>
+            </div>
+          </div>
+        </aside>
 
         <article className="sheet results-sheet print-doc">
           <header className="print-head">
@@ -137,7 +139,7 @@ export function ResultsScreen({ attemptId }: { attemptId: string }) {
           </header>
           <AnswerReview attempt={attempt} />
         </article>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

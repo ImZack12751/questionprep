@@ -3,55 +3,32 @@ import { href } from '../../lib/router';
 import { attemptSummary } from '../attempt/answers';
 import type { Attempt } from '../attempt/types';
 
+/** Compact list of attempts for the start screen's side panel. */
 export function AttemptHistory({ attempts }: { attempts: Attempt[] }) {
-  if (!attempts.length) return null;
+  if (!attempts.length) return <p className="muted attempt-empty">No attempts yet.</p>;
   return (
-    <section className="history" aria-labelledby="history-title">
-      <h2 id="history-title" className="section-label">
-        Attempts <span>{attempts.length}</span>
-      </h2>
-      <table className="history-table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Started</th>
-            <th scope="col">Status</th>
-            <th scope="col">Time used</th>
-            <th scope="col">Answered</th>
-            <th scope="col">Flagged</th>
-            <th scope="col">
-              <span className="sr-only">Open</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {attempts.map((a, i) => {
-            const s = attemptSummary(a);
-            const done = a.status === 'submitted';
-            return (
-              <tr key={a.id}>
-                <td>{attempts.length - i}</td>
-                <td>{formatDate(a.startedAt)}</td>
-                <td>
-                  <span className={`pill ${done ? 'pill-done' : 'pill-progress'}`}>
-                    {done ? (a.autoSubmitted ? 'Time up' : 'Submitted') : 'In progress'}
-                  </span>
-                </td>
-                <td>{formatDuration(a.elapsedMs)}</td>
-                <td>
-                  {s.answered}/{s.total}
-                </td>
-                <td>{s.flagged}</td>
-                <td>
-                  <a className="link" href={href(done ? { name: 'results', attemptId: a.id } : { name: 'exam', attemptId: a.id })}>
-                    {done ? 'Results & export' : 'Resume'}
-                  </a>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </section>
+    <ol className="attempt-list">
+      {attempts.map((a, i) => {
+        const s = attemptSummary(a);
+        const done = a.status === 'submitted';
+        return (
+          <li key={a.id}>
+            <a className="attempt-item" href={href(done ? { name: 'results', attemptId: a.id } : { name: 'exam', attemptId: a.id })}>
+              <span className="attempt-num">#{attempts.length - i}</span>
+              <span className="attempt-main">
+                <span className="attempt-date">{formatDate(a.startedAt)}</span>
+                <span className="attempt-meta">
+                  {s.answered}/{s.total} answered · {formatDuration(a.elapsedMs)}
+                  {s.flagged ? ` · ${s.flagged} flagged` : ''}
+                </span>
+              </span>
+              <span className={`pill ${done ? 'pill-done' : 'pill-progress'}`}>
+                {done ? (a.autoSubmitted ? 'Time up' : 'Submitted') : 'In progress'}
+              </span>
+            </a>
+          </li>
+        );
+      })}
+    </ol>
   );
 }

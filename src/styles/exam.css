@@ -84,20 +84,223 @@
   }
 }
 
+/* Navigator | paper (| calculator drawer, which pads the right on desktop). */
 .exam-layout {
+  --nav-w: 264px;
+  display: grid;
+  grid-template-columns: var(--nav-w) minmax(0, 1fr);
+  gap: var(--space-5);
+  max-width: calc(var(--nav-w) + var(--sheet-width) + 3 * var(--space-5));
+  margin: 0 auto;
+  padding: 0 var(--space-5);
   transition: padding-right 0.25s var(--ease);
 }
 .exam-main {
-  max-width: calc(var(--sheet-width) + 2 * var(--space-5));
-  margin: 0 auto;
-  padding: 0 var(--space-5) var(--space-8);
+  min-width: 0;
+  padding-bottom: var(--space-8);
+}
+.exam-nav {
+  position: sticky;
+  top: calc(var(--topbar-h) + var(--space-4));
+  align-self: start;
+  max-height: calc(100vh - var(--topbar-h) - 2 * var(--space-4));
+  margin-top: var(--space-4);
+  overflow-y: auto;
+  border: 1px solid var(--sheet-edge);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.exam-nav-toggle {
+  display: none;
 }
 .exam-tabs-wrap {
   position: sticky;
   top: var(--topbar-h);
   z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   padding: var(--space-4) 0 var(--space-3);
   background: var(--desk);
+}
+.section-tabs {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Question navigator */
+.qnav-progress {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.88rem;
+}
+.qnav-progress-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.qnav-progress .progress {
+  margin-top: var(--space-2);
+}
+.qnav-flag-count {
+  color: var(--flag);
+  font-weight: 600;
+}
+.qnav-sections {
+  padding: var(--space-2) 0;
+}
+.qnav-section {
+  padding: var(--space-2) var(--space-4) var(--space-3);
+}
+.qnav-section-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  margin-bottom: var(--space-2);
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.qnav-section-head:hover {
+  color: var(--accent);
+}
+.qnav-section.is-current .qnav-section-head {
+  color: var(--ink);
+}
+.qnav-section.is-current .qnav-section-title {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.qnav-section-count {
+  flex: none;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.qnav-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+.qnav-q {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 36px;
+  border: 1.5px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.qnav-q:hover {
+  border-color: var(--accent);
+}
+.qnav-q.is-complete {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.qnav-q.is-partial {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, var(--accent-soft) 50%, var(--surface) 50%);
+  color: var(--accent);
+}
+.qnav-q.is-flagged::after {
+  content: '';
+  position: absolute;
+  top: -1.5px;
+  right: -1.5px;
+  border-top: 10px solid var(--flag);
+  border-left: 10px solid transparent;
+  border-top-right-radius: var(--radius-sm);
+}
+.qnav-q.is-active {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.qnav-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border-top: 1px solid var(--rule);
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.qnav-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.qnav-legend .qnav-q {
+  width: 16px;
+  height: 16px;
+  border-width: 1.5px;
+  cursor: default;
+}
+.qnav-legend .qnav-q.is-flagged::after {
+  border-top-width: 7px;
+  border-left-width: 7px;
+}
+.exam-nav-scrim {
+  display: none;
+}
+
+/* Narrow screens: the navigator becomes a slide-in panel. */
+@media (max-width: 1100px) {
+  .exam-layout {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: calc(var(--sheet-width) + 2 * var(--space-5));
+  }
+  .exam-nav {
+    position: fixed;
+    top: var(--topbar-h);
+    bottom: 0;
+    left: 0;
+    z-index: 45;
+    width: 290px;
+    max-height: none;
+    margin: 0;
+    border-width: 0 1px 0 0;
+    border-radius: 0;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform 0.25s var(--ease),
+      visibility 0s linear 0.25s;
+  }
+  .exam-nav.is-open {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.25s var(--ease);
+  }
+  .exam-nav-scrim {
+    position: fixed;
+    inset: var(--topbar-h) 0 0 0;
+    z-index: 44;
+    display: block;
+    background: rgb(15 18 25 / 0.35);
+  }
+  .exam-nav-toggle {
+    display: inline-flex;
+    flex: none;
+  }
 }
 .section-tabs {
   display: flex;
