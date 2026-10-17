@@ -3,8 +3,14 @@
   padding: var(--space-5) 0 var(--space-6);
   scroll-margin-top: calc(var(--topbar-h) + 72px);
 }
-.question + .question {
+.question-group {
+  scroll-margin-top: calc(var(--topbar-h) + 72px);
+}
+.question-group + .question-group {
   border-top: 1px solid var(--rule);
+}
+.question-group > .context-stack + .question {
+  padding-top: var(--space-4);
 }
 /* Flag marker sits in the margin, like a red-pen tick. */
 .question.is-flagged::before {
@@ -383,4 +389,140 @@ math-field.math-input::part(virtual-keyboard-toggle) {
   text-decoration: underline wavy var(--danger);
   text-decoration-skip-ink: none;
   text-underline-offset: 3px;
+}
+
+/* Context cards: sources, case studies and data shown above a question. */
+.context-stack {
+  display: grid;
+  /* minmax(0, …) lets wide tables scroll inside the card instead of widening the page. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+}
+.context-card {
+  min-width: 0;
+  border: 1px solid var(--rule-strong);
+  border-left: 4px solid var(--ink-soft);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--desk) 55%, var(--sheet));
+}
+.context-heading {
+  margin: 0;
+  font-size: inherit;
+}
+.context-toggle {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'label hint'
+    'title hint';
+  align-items: center;
+  column-gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 0;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.context-toggle:hover .context-hint {
+  color: var(--accent);
+}
+.context-label {
+  grid-area: label;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.context-title {
+  grid-area: title;
+  margin-top: 2px;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+.context-hint {
+  grid-area: hint;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.context-hint::after {
+  content: ' ▾';
+}
+.is-open .context-hint::after {
+  content: ' ▴';
+}
+.context-body {
+  padding: 0 var(--space-4) var(--space-4);
+}
+.context-print-ref {
+  display: none;
+}
+.context-card.is-collapsed .context-body {
+  display: none;
+}
+.context-card.is-open .context-toggle {
+  padding-bottom: var(--space-2);
+}
+.context-text {
+  font-family: var(--font-paper);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* Tables in question and context text. */
+.rich .table-wrap {
+  max-width: 100%;
+  margin: 0 0 0.7em;
+  overflow-x: auto;
+}
+.rich .table-wrap table {
+  margin: 0;
+  border-collapse: collapse;
+  font-family: var(--font-ui);
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+.rich th {
+  background: var(--desk-2);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.rich th,
+.rich td {
+  padding: 0.4em 0.75em;
+  border: 1px solid var(--rule-strong);
+}
+.rich td {
+  background: var(--surface);
+}
+
+@media (max-width: 600px) {
+  .context-toggle {
+    grid-template-areas:
+      'label'
+      'title'
+      'hint';
+    grid-template-columns: 1fr;
+  }
+  .context-hint {
+    margin-top: 4px;
+  }
+}
+
+@media (max-width: 600px) {
+  .part {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'label'
+      'body';
+    row-gap: var(--space-2);
+  }
+  .part-head {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
 }

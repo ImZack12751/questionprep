@@ -1,7 +1,8 @@
 import type { z } from 'zod';
 import { PaperSchema, QUESTION_TYPES, ANSWER_TYPES, type Paper } from './schema';
 
-export type ParseResult = { ok: true; paper: Paper } | { ok: false; errors: string[] };
+/** Warnings don't block an upload but are shown to the user. */
+export type ParseResult = { ok: true; paper: Paper; warnings: string[] } | { ok: false; errors: string[] };
 
 const MAX_ERRORS = 12;
 
@@ -21,13 +22,20 @@ export function parsePaperJson(text: string): ParseResult {
 
 export function validatePaper(raw: unknown): ParseResult {
   const result = PaperSchema.safeParse(raw);
-  if (result.success) return { ok: true, paper: result.data };
+  if (result.success) return { ok: true, paper: result.data, warnings: paperWarnings(result.data) };
   const messages = [...new Set(result.error.issues.map((i) => formatIssue(i, raw)))];
   if (messages.length > MAX_ERRORS) {
     const extra = messages.length - MAX_ERRORS;
     return { ok: false, errors: [...messages.slice(0, MAX_ERRORS), `…and ${extra} more problem${extra === 1 ? '' : 's'}.`] };
   }
   return { ok: false, errors: messages };
+}
+
+function paperWarnings(paper: Paper): string[] {
+  const used = new Set(paper.sections.flatMap((s) => s.questions.flatMap((q) => q.contextIds ?? [])));
+  return (paper.contexts ?? [])
+    .filter((c) => !used.has(c.id))
+    .map((c) => `Context "${c.label}" (id "${c.id}") isn't used by any question, so it won't be shown.`);
 }
 
 /** AI chats often wrap JSON in ```json fences; tolerate that. */
@@ -53,7 +61,12 @@ function formatIssue(issue: z.core.$ZodIssue, raw: unknown): string {
   let i = 0;
   let inPart = false;
 
-  if (path[0] === 'sections' && typeof path[1] === 'number') {
+  if (path[0] === 'contexts' && typeof path[1] === 'number') {
+    const c = get(raw, path.slice(0, 2)) as { id?: unknown; label?: unknown } | undefined;
+    const name = typeof c?.label === 'string' && c.label ? ` ("${c.label}")` : typeof c?.id === 'string' && c.id ? ` ("${c.id}")` : '';
+    where.push(`Context ${path[1] + 1}${name}`);
+    i = 2;
+  } else if (path[0] === 'sections' && typeof path[1] === 'number') {
     where.push(`Section ${path[1] + 1}`);
     i = 2;
     if (path[2] === 'questions' && typeof path[3] === 'number') {
@@ -92,6 +105,8 @@ function formatIssue(issue: z.core.$ZodIssue, raw: unknown): string {
       return `${prefix}${name || 'value'} is not in a recognised shape`;
     }
     case 'invalid_type': {
+      // Fields that must be absent carry their own explanation.
+      if (issue.expected === 'undefined') return `${prefix}${issue.message}`;
       if (input === undefined) return `${prefix}${name} is missing`;
       const expected = issue.expected === 'array' ? 'a list' : issue.expected === 'object' ? 'an object' : `a ${issue.expected}`;
       return `${prefix}${name || 'value'} should be ${expected}`;

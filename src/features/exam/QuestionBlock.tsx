@@ -5,6 +5,8 @@ import { plural } from '../../lib/format';
 import { answerKey, type QuestionStatus } from '../attempt/answers';
 import type { Answer, Attempt } from '../attempt/types';
 import type { Answerable, Question } from '../paper/schema';
+import { ContextCards } from '../paper/ContextCard';
+import type { PlacedContext } from '../paper/contexts';
 import { AnswerInput } from './inputs/AnswerInput';
 
 interface Props {
@@ -16,6 +18,8 @@ interface Props {
   locked: boolean;
   onAnswer: (key: string, a: Answer) => void;
   onToggleFlag: (questionId: string) => void;
+  /** Sources / case studies shown above the question. */
+  contexts?: PlacedContext[];
 }
 
 const Marks = ({ n }: { n: number }) => <span className="marks">[{plural(n, 'mark')}]</span>;
@@ -55,10 +59,26 @@ function Item({
   );
 }
 
-export const QuestionBlock = memo(function QuestionBlock({ question: q, number, answers, flagged, status, locked, onAnswer, onToggleFlag }: Props) {
+export const QuestionBlock = memo(function QuestionBlock({
+  question: q,
+  number,
+  answers,
+  flagged,
+  status,
+  locked,
+  onAnswer,
+  onToggleFlag,
+  contexts = [],
+}: Props) {
   const headId = `q-${q.id}-head`;
   return (
-    <article id={`question-${q.id}`} className={`question ${flagged ? 'is-flagged' : ''}`} aria-labelledby={headId}>
+    <div id={`question-${q.id}`} className="question-group">
+      <ContextCards items={contexts} />
+    <article
+      className={`question ${flagged ? 'is-flagged' : ''} ${contexts.length ? 'has-context' : ''}`}
+      aria-labelledby={headId}
+      aria-describedby={contexts.length ? contexts.map((c) => c.domId).join(' ') : undefined}
+    >
       <header className="question-head">
         <h3 id={headId} className="question-number">
           <span className="sr-only">Question </span>
@@ -124,5 +144,6 @@ export const QuestionBlock = memo(function QuestionBlock({ question: q, number, 
         )}
       </div>
     </article>
+    </div>
   );
 });

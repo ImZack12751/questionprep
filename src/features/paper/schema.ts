@@ -44,7 +44,20 @@ function checkBlanks(q: { text: string; blanks: number }, ctx: z.RefinementCtx) 
   }
 }
 
-const partBase = { label: requiredText, marks, text: requiredText };
+/** Ids of the contexts (sources, case studies, data) a question refers to. */
+const contextIds = z
+  .array(z.string({ error: 'contextIds entries must be strings' }).trim().min(1, { error: 'contextIds entries must not be empty' }), {
+    error: 'contextIds must be a list of context ids, e.g. ["sourceA"]',
+  })
+  .optional();
+
+const partBase = {
+  label: requiredText,
+  marks,
+  text: requiredText,
+  // Parts inherit their question's contexts; they can't have their own.
+  contextIds: z.undefined({ error: 'parts cannot have contextIds; put contextIds on the multipart question instead' }).optional(),
+};
 const PartSchema = z.discriminatedUnion('type', [
   z.object({ ...partBase, ...mcqFields }),
   z.object({ ...partBase, ...typedFields }),
@@ -52,7 +65,7 @@ const PartSchema = z.discriminatedUnion('type', [
   z.object({ ...partBase, ...fillBlankFields }).superRefine(checkBlanks),
 ]);
 
-const questionBase = { id: requiredText, marks, text: requiredText };
+const questionBase = { id: requiredText, marks, text: requiredText, contextIds };
 const MultipartSchema = z
   .object({
     id: requiredText,
@@ -60,6 +73,7 @@ const MultipartSchema = z
     // Optional: always recomputed as the sum of the parts.
     marks: z.number().optional(),
     text: z.string().default(''),
+    contextIds,
     parts: z.array(PartSchema).min(1, { error: 'multipart needs at least 1 part' }),
   })
   .superRefine((q, ctx) => {
@@ -81,6 +95,16 @@ const QuestionSchema = z.discriminatedUnion('type', [
   MultipartSchema,
 ]);
 
+export const ContextSchema = z.object(
+  {
+    id: requiredText,
+    label: requiredText,
+    title: optionalText,
+    text: requiredText,
+  },
+  { error: 'each context must be an object with "id", "label" and "text"' },
+);
+
 const SectionSchema = z.object({
   title: requiredText,
   instructions: optionalText,
@@ -93,6 +117,7 @@ export const PaperSchema = z
     subject: optionalText,
     durationMinutes: z.number().positive({ error: 'must be greater than 0' }),
     instructions: optionalText,
+    contexts: z.array(ContextSchema, { error: 'contexts must be a list of context objects' }).optional(),
     sections: z.array(SectionSchema).min(1, { error: 'a paper needs at least 1 section' }),
   })
   .superRefine((paper, ctx) => {
@@ -110,9 +135,38 @@ export const PaperSchema = z
         } else seen.set(q.id, where);
       }),
     );
+
+    const contexts = paper.contexts ?? [];
+    const ids = new Set<string>();
+    const labels = new Set<string>();
+    contexts.forEach((c, i) => {
+      if (ids.has(c.id)) {
+        ctx.addIssue({ code: 'custom', path: ['contexts', i, 'id'], message: `context id "${c.id}" is used more than once; context ids must be unique` });
+      }
+      if (labels.has(c.label)) {
+        ctx.addIssue({ code: 'custom', path: ['contexts', i, 'label'], message: `context label "${c.label}" is used more than once; labels must be unique` });
+      }
+      ids.add(c.id);
+      labels.add(c.label);
+    });
+    paper.sections.forEach((s, si) =>
+      s.questions.forEach((q, qi) =>
+        q.contextIds?.forEach((id, k) => {
+          if (!ids.has(id)) {
+            const known = contexts.length ? ` Known context ids: ${contexts.map((c) => `"${c.id}"`).join(', ')}.` : ' The paper has no "contexts".';
+            ctx.addIssue({
+              code: 'custom',
+              path: ['sections', si, 'questions', qi, 'contextIds', k],
+              message: `contextIds refers to "${id}", which is not a context id.${known}`,
+            });
+          }
+        }),
+      ),
+    );
   });
 
 export type Paper = z.output<typeof PaperSchema>;
+export type Context = z.output<typeof ContextSchema>;
 export type Section = Paper['sections'][number];
 export type Question = Section['questions'][number];
 export type QuestionType = Question['type'];

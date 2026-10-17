@@ -56,10 +56,20 @@ export function toMarkdown(attempt: Attempt): string {
   out.push(meta.join('  \n'), '');
   if (x.attempt.submittedAt) out.push(`_Submitted ${new Date(x.attempt.submittedAt).toLocaleString()}_`, '');
 
+  const contexts = new Map((x.contexts ?? []).map((c) => [c.id, c]));
   x.sections.forEach((s, si) => {
     out.push('---', '', `## Section ${si + 1}: ${s.title}`, '');
     if (s.instructions) out.push(`_${s.instructions}_`, '');
+    let previous = new Set<string>();
     for (const q of s.questions) {
+      // Sources go above the question: in full at the start of a run, as a reference after that.
+      for (const id of q.contextIds ?? []) {
+        const c = contexts.get(id);
+        if (!c) continue;
+        const heading = `**${c.label}**${c.title ? ` — ${c.title}` : ''}`;
+        out.push(previous.has(id) ? `> ${heading} _(as above)_` : quote(`${heading}\n\n${c.text}`), '');
+      }
+      previous = new Set(q.contextIds ?? []);
       out.push(`### Question ${q.number} (id: ${q.id}) — ${plural(q.marks, 'mark')}${q.flagged ? ' 🚩 Flagged' : ''}`, '');
       if (q.parts) {
         if (q.text) out.push(q.text, '');

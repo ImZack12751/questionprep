@@ -16,11 +16,13 @@ export function LibraryScreen() {
   const { entries, add, remove } = useLibrary();
   const toast = useToast();
   const [errors, setErrors] = useState<FileError[]>([]);
+  const [warnings, setWarnings] = useState<FileError[]>([]);
   const [pendingDelete, setPendingDelete] = useState<LibraryEntry | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
   async function handleFiles(files: File[]) {
     const problems: FileError[] = [];
+    const notes: FileError[] = [];
     const added: string[] = [];
     for (const file of files) {
       if (!/\.json$/i.test(file.name) && file.type !== 'application/json') {
@@ -32,10 +34,12 @@ export function LibraryScreen() {
         problems.push({ fileName: file.name, errors: result.errors });
         continue;
       }
+      if (result.warnings.length) notes.push({ fileName: file.name, errors: result.warnings });
       if (await add(result.paper, file.name)) added.push(result.paper.title);
       else toast(`“${result.paper.title}” is already in your library`);
     }
     setErrors(problems);
+    setWarnings(notes);
     if (added.length === 1) toast(`Added “${added[0]}”`);
     else if (added.length > 1) toast(`Added ${added.length} papers`);
   }
@@ -82,6 +86,7 @@ export function LibraryScreen() {
       />
 
       <UploadErrors items={errors} onDismiss={() => setErrors([])} />
+      <UploadErrors tone="warning" items={warnings} onDismiss={() => setWarnings([])} />
 
       {entries === null ? null : entries.length === 0 ? (
         <button type="button" className="empty-drop" onClick={() => fileInput.current?.click()}>

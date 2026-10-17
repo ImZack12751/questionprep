@@ -26,9 +26,16 @@ export function ExamTopBar({ title, remainingMs, paused, locked, onPause, onSubm
         <span className="timer-value">{formatClock(remainingMs)}</span>
       </div>
       <div className="exam-actions">
-        <button type="button" className="btn btn-ghost" onClick={onPause} disabled={locked} aria-pressed={paused}>
+        <button
+          type="button"
+          className="btn btn-ghost"
+          onClick={onPause}
+          disabled={locked}
+          aria-pressed={paused}
+          aria-label={paused ? 'Resume' : 'Pause'}
+        >
           <Icon name={paused ? 'play' : 'pause'} size={16} />
-          {paused ? 'Resume' : 'Pause'}
+          <span className="btn-label">{paused ? 'Resume' : 'Pause'}</span>
         </button>
         <button type="button" className="btn btn-primary" onClick={onSubmit} disabled={locked}>
           <Icon name="check" size={16} /> Submit

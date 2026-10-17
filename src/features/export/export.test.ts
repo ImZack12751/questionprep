@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import maths from '../../../samples/maths-calculus-algebra.json';
 import mixed from '../../../samples/mixed-science-english.json';
+import sources from '../../../samples/individuals-societies-sources.json';
 import { validatePaper } from '../paper/validate';
 import type { Attempt } from '../attempt/types';
 import { buildExport } from './exportData';
@@ -67,5 +68,30 @@ describe('formatted written answers', () => {
   });
   it('Markdown export keeps formatting', () => {
     expect(toMarkdown(a)).toContain('> Particles **collide**\n> - faster when *hot*');
+  });
+});
+
+describe('contexts in exports', () => {
+  const a = attemptFor(sources, { '2': { type: 'typed', text: 'Flooding and no piped water.' } });
+
+  it('JSON includes the sources and each question\'s contextIds', () => {
+    const x = buildExport(a);
+    expect(x.contexts?.map((c) => c.label)).toEqual(['Source A', 'Source B']);
+    expect(x.sections[0]!.questions.map((q) => q.contextIds)).toEqual([['sourceA'], ['sourceA'], ['sourceA']]);
+    expect(x.sections[1]!.questions[0]!.contextIds).toEqual(['sourceB']);
+    expect(x.sections[1]!.questions[0]!.parts![0]).not.toHaveProperty('contextIds');
+  });
+
+  it('JSON for papers without contexts is unchanged', () => {
+    const x = buildExport(attemptFor(mixed, {}));
+    expect(x).not.toHaveProperty('contexts');
+    expect(x.sections[0]!.questions[0]).not.toHaveProperty('contextIds');
+  });
+
+  it('Markdown shows a source in full once per run, then refers back', () => {
+    const md = toMarkdown(a);
+    expect(md.match(/> \*\*Source A\*\* — Extract from a city planning report \(fictional\), 2024\n>/g)).toHaveLength(2); // Q1 and Q5
+    expect(md.match(/> \*\*Source A\*\* — .*_\(as above\)_/g)).toHaveLength(2); // Q2 and Q3
+    expect(md).toContain('> | Year | Population (millions) |');
   });
 });

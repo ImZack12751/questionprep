@@ -6,6 +6,8 @@ import { plainToHtml, sanitizeAnswerHtml } from '../../lib/richAnswer';
 import { answerKey, isAnswered, optionLetter } from '../attempt/answers';
 import type { Answer, Attempt } from '../attempt/types';
 import type { Answerable } from '../paper/schema';
+import { ContextCards } from '../paper/ContextCard';
+import { placeContexts, sectionFirstNumbers } from '../paper/contexts';
 
 const NoAnswer = () => <p className="review-none">No answer</p>;
 
@@ -62,9 +64,12 @@ function ItemReview({ item, answer }: { item: Answerable; answer: Answer | undef
 /** The paper with the student's answers. Also the layout used for PDF printing. */
 export function AnswerReview({ attempt }: { attempt: Attempt }) {
   let n = 0;
+  const firsts = sectionFirstNumbers(attempt.paper);
   return (
     <div className="review">
-      {attempt.paper.sections.map((s, si) => (
+      {attempt.paper.sections.map((s, si) => {
+        const placed = placeContexts(attempt.paper, s, firsts[si]!);
+        return (
         <section key={si} className="review-section">
           <h3 className="review-section-title">
             <span>Section {si + 1}</span> {s.title}
@@ -72,8 +77,14 @@ export function AnswerReview({ attempt }: { attempt: Attempt }) {
           {s.questions.map((q) => {
             n++;
             const flagged = !!attempt.flags[q.id];
+            const contexts = placed.get(q.id) ?? [];
             return (
-              <article key={q.id} className={`review-q ${flagged ? 'is-flagged' : ''}`}>
+              <div key={q.id} className="review-group">
+              <ContextCards items={contexts} />
+              <article
+                className={`review-q ${flagged ? 'is-flagged' : ''}`}
+                aria-describedby={contexts.length ? contexts.map((c) => c.domId).join(' ') : undefined}
+              >
                 <header className="review-q-head">
                   <span className="question-number">{n}</span>
                   <span className="review-q-meta">
@@ -98,10 +109,12 @@ export function AnswerReview({ attempt }: { attempt: Attempt }) {
                   <ItemReview item={q} answer={attempt.answers[q.id]} />
                 )}
               </article>
+              </div>
             );
           })}
         </section>
-      ))}
+        );
+      })}
     </div>
   );
 }

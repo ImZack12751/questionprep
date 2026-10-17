@@ -24,6 +24,8 @@ export interface ExportedQuestion extends Partial<Omit<ExportedItem, 'type'>> {
   marks: number;
   text: string;
   flagged: boolean;
+  /** Ids of the contexts (sources) this question uses; see AttemptExport.contexts. */
+  contextIds?: string[];
   parts?: (ExportedItem & { label: string })[];
 }
 
@@ -43,13 +45,15 @@ export interface AttemptExport {
     totalQuestions: number;
     flaggedCount: number;
   };
+  /** Shared background material (sources, case studies, data) referenced by questions' contextIds. */
+  contexts?: { id: string; label: string; title?: string; text: string }[];
   sections: { title: string; instructions?: string; questions: ExportedQuestion[] }[];
 }
 
 export const MARKING_NOTE =
   'Student answers from a timed practice exam taken in Questionprep. Please mark each answer against the question and its marks, ' +
   'give the marks awarded with brief feedback, and a total out of paper.totalMarks. Maths answers are LaTeX. ' +
-  'Flagged questions were ones the student marked for review.';
+  'Flagged questions were ones the student marked for review. Questions with contextIds refer to the sources in "contexts".';
 
 export function exportAnswer(item: Answerable, a: Answer | undefined): ExportedAnswer {
   if (!a) return null;
@@ -108,12 +112,14 @@ export function buildExport(attempt: Attempt): AttemptExport {
       totalQuestions: s.total,
       flaggedCount: s.flagged,
     },
+    ...(paper.contexts?.length ? { contexts: paper.contexts } : {}),
     sections: paper.sections.map((sec) => ({
       title: sec.title,
       ...(sec.instructions ? { instructions: sec.instructions } : {}),
       questions: sec.questions.map((q): ExportedQuestion => {
         number++;
         const flagged = !!attempt.flags[q.id];
+        const ctx = q.contextIds?.length ? { contextIds: q.contextIds } : {};
         if (q.type === 'multipart') {
           return {
             id: q.id,
@@ -121,11 +127,12 @@ export function buildExport(attempt: Attempt): AttemptExport {
             type: q.type,
             marks: q.marks,
             text: q.text,
+            ...ctx,
             flagged,
             parts: q.parts.map((p) => ({ label: p.label, ...exportItem(p, attempt.answers[answerKey(q.id, p.label)]) })),
           };
         }
-        return { id: q.id, number, ...exportItem(q, attempt.answers[q.id]), flagged };
+        return { id: q.id, number, ...ctx, ...exportItem(q, attempt.answers[q.id]), flagged };
       }),
     })),
   };

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { placeContexts } from '../paper/contexts';
 import { Rich } from '../../components/Rich';
 import { CalculatorDrawer } from '../calculator/CalculatorDrawer';
 import { useDrawerWidth } from '../calculator/useDrawerWidth';
@@ -47,6 +48,7 @@ export function ExamSession({ initial }: { initial: Attempt }) {
   const sectionIndex = Math.min(attempt.currentSection, paper.sections.length - 1);
   const section = paper.sections[sectionIndex]!;
   const firstNumber = paper.sections.slice(0, sectionIndex).reduce((n, s) => n + s.questions.length, 0) + 1;
+  const placedContexts = useMemo(() => placeContexts(paper, section, firstNumber), [paper, section, firstNumber]);
 
   const selectSection = useCallback(
     (i: number) => {
@@ -149,6 +151,7 @@ export function ExamSession({ initial }: { initial: Attempt }) {
                 locked={locked}
                 onAnswer={setAnswer}
                 onToggleFlag={toggleFlag}
+                contexts={placedContexts.get(q.id)}
               />
             ))}
             <footer className="exam-section-foot">

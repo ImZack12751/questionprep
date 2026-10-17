@@ -5,12 +5,24 @@ export interface FileError {
   errors: string[];
 }
 
-export function UploadErrors({ items, onDismiss }: { items: FileError[]; onDismiss: () => void }) {
+interface Props {
+  items: FileError[];
+  onDismiss: () => void;
+  /** Warnings: the paper was added, but something in it looks off. */
+  tone?: 'error' | 'warning';
+}
+
+export function UploadErrors({ items, onDismiss, tone = 'error' }: Props) {
   if (!items.length) return null;
+  const warning = tone === 'warning';
   return (
-    <section className="upload-errors" role="alert" aria-label="Upload problems">
+    <section
+      className={`upload-errors ${warning ? 'is-warning' : ''}`}
+      role={warning ? 'status' : 'alert'}
+      aria-label={warning ? 'Upload warnings' : 'Upload problems'}
+    >
       <header>
-        <h2>We couldn't add {items.length === 1 ? 'this file' : 'these files'}</h2>
+        <h2>{warning ? 'Added, with warnings' : `We couldn't add ${items.length === 1 ? 'this file' : 'these files'}`}</h2>
         <button type="button" className="btn btn-icon btn-ghost" onClick={onDismiss} aria-label="Dismiss">
           <Icon name="close" />
         </button>
@@ -25,7 +37,7 @@ export function UploadErrors({ items, onDismiss }: { items: FileError[]; onDismi
           </ul>
         </div>
       ))}
-      <p className="upload-errors-hint">Fix the file (or ask the AI to fix it, pasting these messages) and upload it again.</p>
+      {!warning && <p className="upload-errors-hint">Fix the file (or ask the AI to fix it, pasting these messages) and upload it again.</p>}
     </section>
   );
 }

@@ -64,6 +64,8 @@ export function renderRich(src: string, opts: RichOptions = {}): string {
       const c = chunks[Number(i)]!;
       return c.display ? `<span class="math-block">${renderTex(c)}</span>` : renderTex(c);
     });
+  // Wide tables scroll sideways on small screens instead of squashing.
+  safe = safe.replace(/<table>/g, '<div class="table-wrap"><table>').replace(/<\/table>/g, '</table></div>');
   if (opts.blanks) safe = safe.replace(/QPBLANK(\d+)QP/g, (_, n: string) => `<span class="blank-slot" data-blank="${n}"></span>`);
 
   if (cache.size > 2000) cache.clear();

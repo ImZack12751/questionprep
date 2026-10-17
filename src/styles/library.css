@@ -197,3 +197,11 @@
 .paper-grid {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
+
+.upload-errors.is-warning {
+  border-color: var(--amber);
+  background: var(--amber-soft);
+}
+.upload-errors.is-warning h2 {
+  color: var(--amber);
+}

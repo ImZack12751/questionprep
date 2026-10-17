@@ -60,6 +60,7 @@ The calculator script loads from `desmos.com`, so the calculator needs an intern
   "subject": string,              // optional
   "durationMinutes": number,      // > 0
   "instructions": string,         // optional
+  "contexts": [ Context ],        // optional: shared sources, case studies, data tables
   "sections": [                   // at least 1
     {
       "title": string,
@@ -80,6 +81,10 @@ The calculator script loads from `desmos.com`, so the calculator needs an intern
 | `fill_blank` | `id`, `marks`, `text`, `blanks: number` | `text` must contain `{{1}}` … `{{blanks}}`; each becomes an inline input |
 | `multipart` | `id`, `text`, `parts: Part[]` | `marks` is optional and always recalculated as the sum of the parts |
 
+Every question type also accepts an optional `"contextIds": string[]`: the ids of the contexts it uses, in display order. On a `multipart` question it goes on the question itself and all parts inherit it; parts can't have their own.
+
+`Context` is `{ "id": string, "label": string, "title"?: string, "text": string }`. Each context appears as its own card directly above every question that lists it, with the label (e.g. "Source A") as a heading, the optional title under it, and the text below. Context text supports the same Markdown and LaTeX as question text, including tables. Images aren't supported.
+
 `Part` is `{ "label": "a", "type": "mcq" | "typed" | "math" | "fill_blank", "marks", "text", "options"?, "allowMultiple"?, "blanks"? }`, following the same per-type rules as above.
 
 Validation rules:
@@ -87,10 +92,15 @@ Validation rules:
 - Question `id`s must be unique across the whole paper, and part labels must be unique within a question.
 - Every text field supports **Markdown** and **LaTeX**: `$…$` (or `\(…\)`) inline, `$$…$$` (or `\[…\]`) display. Write `\$` for a literal dollar sign.
 - In JSON, backslashes must be doubled: `"\\frac{1}{2}"`.
+- Context ids and labels must be unique, and every `contextIds` entry must match a context id. A context that no question uses is accepted with a warning (it would never be shown).
 - Unknown extra fields (e.g. an `answer` key added by the AI) are ignored.
 - A file wrapped in a Markdown code fence (` ```json … ``` `) is accepted.
 
-See [`samples/`](samples/) for two complete papers.
+See [`samples/`](samples/) for three complete papers. `individuals-societies-sources.json` shows contexts: Source A is shared by three consecutive questions, and Source B is a data table.
+
+### How shared contexts are shown
+
+When consecutive questions use the same context, the card is expanded above the first one and collapsed above the rest. A collapsed card still shows its label and title, plus "Show (also used by question N)", so it's one click away. On the results page the same rule applies. In the PDF every card is printed in full. The Markdown export prints a source in full once per run and writes "(as above)" after that. The JSON export includes `contexts` and each question's `contextIds`, so an AI marker can see the sources.
 
 ## AI prompt template
 
@@ -108,6 +118,7 @@ SCHEMA
   "subject": string,                     // optional
   "durationMinutes": number,
   "instructions": string,                // optional, shown before the exam starts
+  "contexts": [ Context, ... ],          // optional: shared sources / case studies / data tables
   "sections": [
     {
       "title": string,
@@ -116,6 +127,12 @@ SCHEMA
     }
   ]
 }
+
+Context = { "id": string, "label": string, "title": string (optional), "text": string }
+      - background material shown in its own card above the questions that use it, e.g. label "Source A".
+      - id and label must each be unique among contexts.
+
+Every Question (any type) may also have "contextIds": string[] listing the context ids it uses, in display order.
 
 Question is one of:
   { "id": string, "type": "mcq", "marks": number, "text": string, "options": string[], "allowMultiple": boolean }
@@ -129,15 +146,21 @@ Question is one of:
   { "id": string, "type": "multipart", "text": string, "parts": Part[] }
       - text is the shared stem. Do not give marks; they are the sum of the parts.
       - Part = { "label": "a", "type": "mcq" | "typed" | "math" | "fill_blank", "marks": number, "text": string, "options"?: string[], "allowMultiple"?: boolean, "blanks"?: number }
+      - contextIds go on the multipart question itself; all parts inherit them. Parts must not have contextIds.
 
 RULES
 - Every question id must be unique across the whole paper (e.g. "1", "2", "3a" or "A1", "B2").
 - All text fields support Markdown plus LaTeX: $...$ for inline maths, $$...$$ for display maths.
 - This is JSON, so every backslash in LaTeX must be doubled: write "\\frac{1}{2}", not "\frac{1}{2}".
 - Do not include answers, mark schemes or diagrams.
+- Every contextIds entry must match the id of a context in "contexts", and every context must be used by at least one question.
+- Context text supports Markdown plus LaTeX, text and tables only, no images.
+- Questions should name the context by its label ("Using Source A, ...").
+- Do not paste the same stimulus into several questions; define it once as a context.
+- Omit "contexts" entirely if there is no shared background.
 - Make the paper realistic for the level, with marks that reflect the work required.
 
-SHORT EXAMPLE
+SHORT EXAMPLE (no contexts)
 {
   "title": "Algebra Check",
   "subject": "Mathematics",
@@ -159,6 +182,26 @@ SHORT EXAMPLE
     }
   ]
 }
+
+SHORT EXAMPLE WITH A CONTEXT
+{
+  "title": "Population Change",
+  "subject": "Geography",
+  "durationMinutes": 15,
+  "contexts": [
+    { "id": "sourceA", "label": "Source A", "title": "Town population",
+      "text": "| Year | Population |\n|---|---:|\n| 2000 | 8 000 |\n| 2020 | 12 000 |" }
+  ],
+  "sections": [
+    {
+      "title": "Section A",
+      "questions": [
+        { "id": "1", "type": "math", "marks": 2, "contextIds": ["sourceA"], "text": "Using Source A, calculate the percentage increase in population from 2000 to 2020." },
+        { "id": "2", "type": "typed", "marks": 3, "contextIds": ["sourceA"], "text": "Using Source A, suggest **two** reasons for the change." }
+      ]
+    }
+  ]
+}
 ````
 
 ## Exported JSON
@@ -169,6 +212,7 @@ The JSON export is designed to be pasted straight into an AI for marking. It inc
 - `typed`: plain text. Formatting is left out of the JSON (lists stay as `- ` / `1. ` lines), but it's kept on the results page, in the PDF and in the Markdown export
 - `math`: a LaTeX string
 - `fill_blank`: one string per blank
+- `contexts` (top level) and `contextIds` (per question) when the paper has sources
 - `null` when unanswered; multipart questions have a `parts` array with an `answer` for each part
 
 Only total time is recorded, not time per question.

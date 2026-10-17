@@ -13,7 +13,7 @@ export function useActiveQuestion(sectionKey: number) {
     const update = () => {
       frame = 0;
       if (performance.now() < pinnedUntil.current) return;
-      const els = document.querySelectorAll<HTMLElement>('#section-panel .question');
+      const els = document.querySelectorAll<HTMLElement>('#section-panel .question-group');
       let current: HTMLElement | undefined = els[0];
       for (const el of els) {
         if (el.getBoundingClientRect().top <= THRESHOLD) current = el;

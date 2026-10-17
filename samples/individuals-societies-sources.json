@@ -1,0 +1,73 @@
+{
+  "title": "Individuals & Societies — Urbanisation Source Paper",
+  "subject": "Individuals & Societies",
+  "durationMinutes": 40,
+  "instructions": "Answer **all** questions.\n\nThis paper is based on two sources. Each source is shown above the questions that use it. Refer to the sources by their labels in your answers.",
+  "contexts": [
+    {
+      "id": "sourceA",
+      "label": "Source A",
+      "title": "Extract from a city planning report (fictional), 2024",
+      "text": "Between 2000 and 2020 the population of Riverton grew from 1.2 million to 2.1 million. Most of this growth came from **rural–urban migration**: young adults moved to the city in search of factory and service jobs.\n\nThe city council could not build housing fast enough. By 2020 an estimated 35% of residents lived in informal settlements on the eastern floodplain, where homes lack piped water and are at risk during the rainy season.\n\n> \"We came for work, and there is work. But the rent in the centre is impossible, so we built here.\" — resident of the eastern settlements"
+    },
+    {
+      "id": "sourceB",
+      "label": "Source B",
+      "title": "Riverton population and services, 2000–2020",
+      "text": "| Year | Population (millions) | Homes with piped water (%) | Average commute (minutes) |\n|---|---:|---:|---:|\n| 2000 | 1.2 | 81 | 24 |\n| 2005 | 1.4 | 78 | 27 |\n| 2010 | 1.6 | 72 | 33 |\n| 2015 | 1.9 | 66 | 41 |\n| 2020 | 2.1 | 61 | 48 |\n\nPercentage change is calculated as $\\dfrac{\\text{new} - \\text{old}}{\\text{old}} \\times 100$."
+    }
+  ],
+  "sections": [
+    {
+      "title": "Section A — Urban growth",
+      "instructions": "Questions 1 to 3 use Source A.",
+      "questions": [
+        {
+          "id": "1",
+          "type": "mcq",
+          "marks": 1,
+          "contextIds": ["sourceA"],
+          "text": "Using Source A, what was the main cause of Riverton's population growth between 2000 and 2020?",
+          "options": ["A rising birth rate", "Rural–urban migration", "International tourism", "Falling death rate"]
+        },
+        {
+          "id": "2",
+          "type": "typed",
+          "marks": 3,
+          "contextIds": ["sourceA"],
+          "text": "Using Source A, describe **two** problems faced by people living in the eastern settlements."
+        },
+        {
+          "id": "3",
+          "type": "typed",
+          "marks": 4,
+          "contextIds": ["sourceA"],
+          "text": "Using Source A and your own knowledge, explain why many migrants live in informal settlements rather than in the city centre."
+        }
+      ]
+    },
+    {
+      "title": "Section B — Data analysis",
+      "questions": [
+        {
+          "id": "4",
+          "type": "multipart",
+          "contextIds": ["sourceB"],
+          "text": "Study Source B.",
+          "parts": [
+            { "label": "a", "type": "math", "marks": 2, "text": "Calculate the percentage change in Riverton's population from 2000 to 2020. Show your working." },
+            { "label": "b", "type": "fill_blank", "marks": 2, "blanks": 2, "text": "Between 2000 and 2020 the share of homes with piped water fell by {{1}} percentage points, while the average commute rose by {{2}} minutes." },
+            { "label": "c", "type": "typed", "marks": 3, "text": "Describe the relationship between population size and access to piped water shown in Source B." }
+          ]
+        },
+        {
+          "id": "5",
+          "type": "typed",
+          "marks": 6,
+          "contextIds": ["sourceA", "sourceB"],
+          "text": "Using Sources A and B, evaluate **one** strategy Riverton's council could use to manage the effects of rapid urban growth."
+        }
+      ]
+    }
+  ]
+}

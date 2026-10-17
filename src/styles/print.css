@@ -79,3 +79,34 @@
     break-inside: avoid;
   }
 }
+
+@media print {
+  /* As on screen: a source is printed in full at the start of a run and referred to after that. */
+  .context-hint {
+    display: none;
+  }
+  .context-print-ref {
+    display: block;
+    grid-area: hint;
+    color: #444;
+    font-size: 9.5pt;
+  }
+  .context-card {
+    background: #f6f6f6;
+    break-inside: avoid-page;
+  }
+  /* Keep a source on the same page as the question that follows it. */
+  .context-stack {
+    break-after: avoid-page;
+  }
+  .review-group .review-q {
+    break-before: avoid-page;
+  }
+  /* A question and its sources stay together when they fit on one page. */
+  .review-group:has(.context-stack) {
+    break-inside: avoid-page;
+  }
+  .rich .table-wrap {
+    overflow: visible;
+  }
+}

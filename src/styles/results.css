@@ -112,10 +112,15 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
+.review-group {
+  border-top: 1px solid var(--rule);
+}
+.review-group .context-stack + .review-q {
+  padding-top: var(--space-4);
+}
 .review-q {
   position: relative;
   padding: var(--space-5) 0;
-  border-top: 1px solid var(--rule);
   break-inside: avoid-page;
 }
 .review-q.is-flagged::before {
