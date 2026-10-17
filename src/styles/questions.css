@@ -377,3 +377,10 @@ math-field.math-input::part(virtual-keyboard-toggle) {
     flex-direction: column;
   }
 }
+
+/* Misspellings found by our US + UK checker (CSS Custom Highlight API). */
+::highlight(qp-spelling) {
+  text-decoration: underline wavy var(--danger);
+  text-decoration-skip-ink: none;
+  text-underline-offset: 3px;
+}

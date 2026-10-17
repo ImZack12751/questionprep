@@ -15,6 +15,8 @@ import { SubmitDialog } from './SubmitDialog';
 import { TimeUpDialog } from './TimeUpDialog';
 import { useExamSession } from './useExamSession';
 import { useExamTimer } from './useExamTimer';
+import { addVocabulary } from '../spelling/spellcheck';
+import { paperText } from '../paper/paperText';
 
 export function ExamSession({ initial }: { initial: Attempt }) {
   const session = useExamSession(initial);
@@ -76,6 +78,14 @@ export function ExamSession({ initial }: { initial: Attempt }) {
     await submit(false);
     navigate({ name: 'results', attemptId: attempt.id }, true);
   }
+
+  // Words used in the paper itself (technical terms, names) never count as misspelled.
+  useEffect(() => {
+    const hasWritten = paper.sections.some((s) =>
+      s.questions.some((q) => q.type === 'typed' || (q.type === 'multipart' && q.parts.some((p) => p.type === 'typed'))),
+    );
+    if (hasWritten) addVocabulary(paperText(paper));
+  }, [paper]);
 
   // Warn before closing the tab mid-exam (progress is saved either way).
   useEffect(() => {

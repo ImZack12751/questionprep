@@ -8,7 +8,7 @@ It runs entirely in the browser. There's no backend, no login and no grading. Pa
 
 - **Library**: upload `.json` papers with the button or by dragging them anywhere on the page. Mistakes in a file are reported with their location, e.g. `Section 2, question 3 ("q4"): mcq needs at least 2 options`. There are two built-in samples and a **Copy AI prompt** button.
 - **Exam**: countdown that turns amber under 5 minutes and red under 1, auto-submit at zero, a pause button that hides the paper, sections as tabs with answered/total counts, and flags for review.
-- **Answer types**: multiple choice (single or multiple answers), free text with a formatting toolbar (bold, italic, underline, bulleted and numbered lists; Ctrl/⌘+B/I/U), maths (MathLive with on-screen keyboard; stored as LaTeX), fill-in-the-blank (inline inputs) and multipart questions.
+- **Answer types**: multiple choice (single or multiple answers), free text with a formatting toolbar (bold, italic, underline, bulleted and numbered lists; Ctrl/⌘+B/I/U) and a spellchecker that accepts both British and American spelling, maths (MathLive with on-screen keyboard; stored as LaTeX), fill-in-the-blank (inline inputs) and multipart questions.
 - **Calculator**: Desmos graphing and scientific calculators in a resizable drawer on the right edge. The calculator keeps its state while the drawer is closed and across reloads.
 - **Autosave and resume**: every change is saved. The timer counts *active* exam time and checkpoints it every few seconds, so time while the tab is closed doesn't count. If the tab closes or the browser crashes, choose **Resume** on the paper's page.
 - **Export**: JSON (for AI marking), Markdown, and PDF via the browser's print dialog, with maths rendered.
@@ -206,4 +206,8 @@ src/
 samples/               example papers (also bundled for the "Load sample" button)
 ```
 
-Built with Vite, React, TypeScript, Zod, MathLive, KaTeX, marked, DOMPurify and idb.
+## Spellchecking
+
+Written answers use Questionprep's own spellchecker, not the browser's, so British and American spellings (colour/color, organise/organize, centre/center) are both accepted. Only words that are wrong in both are underlined. Words that appear in the paper itself, acronyms (DNA) and formulas (NaCl, pH) are never flagged. The checker runs in a background worker using the US and UK English Hunspell dictionaries from [wooorm/dictionaries](https://github.com/wooorm/dictionaries) (MIT/BSD; licences are copied next to the dictionary files). `npm run dev` and `npm run build` copy the dictionaries into `public/dictionaries/` automatically. Browsers without the CSS Custom Highlight API fall back to the built-in spellchecker.
+
+Built with Vite, React, TypeScript, Zod, MathLive, KaTeX, marked, DOMPurify, nspell and idb.

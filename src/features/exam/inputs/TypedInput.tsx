@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { htmlToPlainText, plainToHtml, sanitizeAnswerHtml } from '../../../lib/richAnswer';
 import type { Answer } from '../../attempt/types';
+import { useSpellcheck } from '../../spelling/useSpellcheck';
 import { FormatToolbar, type FormatCommand } from './FormatToolbar';
 
 interface Props {
@@ -22,6 +23,8 @@ export function TypedInput({ value, onChange, disabled, labelledBy }: Props) {
   onChangeRef.current = onChange;
   const [active, setActive] = useState<Set<FormatCommand>>(new Set());
   const [empty, setEmpty] = useState(!value?.text.trim());
+  // Our own checker accepts US and UK spelling; the browser's is only a fallback.
+  const nativeSpellcheck = useSpellcheck(ref, !disabled);
 
   useEffect(() => {
     const el = ref.current;
@@ -71,7 +74,7 @@ export function TypedInput({ value, onChange, disabled, labelledBy }: Props) {
         aria-labelledby={labelledBy}
         aria-readonly={disabled}
         data-placeholder="Write your answer…"
-        spellCheck
+        spellCheck={nativeSpellcheck}
         onInput={emit}
         onPaste={(e) => {
           // Paste as plain text so outside styles (fonts, colours) never come in.
