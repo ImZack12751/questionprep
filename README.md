@@ -8,7 +8,7 @@ It runs entirely in the browser. There's no backend, no login and no grading. Pa
 
 - **Library**: upload `.json` papers with the button or by dragging them anywhere on the page. Mistakes in a file are reported with their location, e.g. `Section 2, question 3 ("q4"): mcq needs at least 2 options`. There are two built-in samples and a **Copy AI prompt** button.
 - **Exam**: countdown that turns amber under 5 minutes and red under 1, auto-submit at zero, a pause button that hides the paper, sections as tabs with answered/total counts, and flags for review.
-- **Answer types**: multiple choice (single or multiple answers), free text with a formatting toolbar (bold, italic, underline, bulleted and numbered lists; Ctrl/⌘+B/I/U) and a spellchecker that accepts both British and American spelling, maths (MathLive with on-screen keyboard, several lines of working, stored as LaTeX), fill-in-the-blank (inline inputs) and multipart questions.
+- **Answer types**: multiple choice (single or multiple answers), free text with a formatting toolbar (bold, italic, underline, superscript and subscript, bulleted and numbered lists; Ctrl/⌘+B/I/U, Ctrl+↑ superscript, Ctrl+↓ subscript) and a spellchecker that accepts both British and American spelling, maths (MathLive with on-screen keyboard, several lines of working, stored as LaTeX), fill-in-the-blank (inline inputs) and multipart questions.
 - **Calculator**: Desmos graphing and scientific calculators in a resizable drawer on the right edge. The calculator keeps its state while the drawer is closed and across reloads.
 - **Autosave and resume**: every change is saved. The timer counts *active* exam time and checkpoints it every few seconds, so time while the tab is closed doesn't count. If the tab closes or the browser crashes, choose **Resume** on the paper's page.
 - **Export**: JSON (for AI marking), Markdown, and PDF via the browser's print dialog, with maths rendered.
@@ -211,7 +211,7 @@ SHORT EXAMPLE WITH A CONTEXT
 The JSON export is designed to be pasted straight into an AI for marking. It includes a `markingNote`, paper details (with `totalMarks`), timing (`timeTakenSeconds`, `autoSubmittedWhenTimeRanOut`), counts, and every question with its `id`, `number`, `type`, `marks`, `text`, `options`, `flagged` and the student's `answer`:
 
 - `mcq`: the chosen option as `"B. text"` (an array when `allowMultiple`)
-- `typed`: plain text. Formatting is left out of the JSON (lists stay as `- ` / `1. ` lines), but it's kept on the results page, in the PDF and in the Markdown export
+- `typed`: plain text. Subscripts and superscripts become Unicode characters where they exist (H₂O, m², Fe³⁺), otherwise `_{…}` / `^{…}`. Other formatting is left out of the JSON (lists stay as `- ` / `1. ` lines), but it's kept on the results page, in the PDF and in the Markdown export
 - `math`: a LaTeX string, with one line of working per line (separated by `\n`)
 - `fill_blank`: one string per blank
 - `contexts` (top level) and `contextIds` (per question) when the paper has sources

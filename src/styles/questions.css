@@ -611,3 +611,22 @@ math-field.math-input::part(menu-toggle) {
     gap: var(--space-3);
   }
 }
+
+/* Sub/superscript in written answers shouldn't push lines apart. */
+.typed-input sub,
+.typed-input sup,
+.review-typed sub,
+.review-typed sup {
+  font-size: 0.72em;
+  line-height: 0;
+}
+.format-script {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.format-script sub,
+.format-script sup {
+  font-size: 0.7em;
+  line-height: 0;
+}

@@ -1,4 +1,4 @@
-export type FormatCommand = 'bold' | 'italic' | 'underline' | 'insertUnorderedList' | 'insertOrderedList';
+export type FormatCommand = 'bold' | 'italic' | 'underline' | 'superscript' | 'subscript' | 'insertUnorderedList' | 'insertOrderedList';
 
 const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
 const mod = isMac ? '⌘' : 'Ctrl+';
@@ -7,6 +7,26 @@ const BUTTONS: { cmd: FormatCommand; label: string; title: string; glyph: React.
   { cmd: 'bold', label: 'Bold', title: `Bold (${mod}B)`, glyph: <b>B</b> },
   { cmd: 'italic', label: 'Italic', title: `Italic (${mod}I)`, glyph: <i>I</i> },
   { cmd: 'underline', label: 'Underline', title: `Underline (${mod}U)`, glyph: <u>U</u> },
+  {
+    cmd: 'superscript',
+    label: 'Superscript',
+    title: 'Superscript (Ctrl+↑)',
+    glyph: (
+      <span className="format-script">
+        x<sup>2</sup>
+      </span>
+    ),
+  },
+  {
+    cmd: 'subscript',
+    label: 'Subscript',
+    title: 'Subscript (Ctrl+↓)',
+    glyph: (
+      <span className="format-script">
+        x<sub>2</sub>
+      </span>
+    ),
+  },
   {
     cmd: 'insertUnorderedList',
     label: 'Bulleted list',
@@ -40,7 +60,7 @@ export function FormatToolbar({ active, onCommand }: { active: Set<FormatCommand
     <div className="format-toolbar" role="toolbar" aria-label="Text formatting">
       {BUTTONS.map((b, i) => (
         <span key={b.cmd} className="format-group">
-          {i === 3 && <span className="format-sep" aria-hidden />}
+          {(i === 3 || i === 5) && <span className="format-sep" aria-hidden />}
           <button
             type="button"
             className={`format-btn ${active.has(b.cmd) ? 'is-on' : ''}`}

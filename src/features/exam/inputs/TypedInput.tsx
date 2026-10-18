@@ -11,7 +11,7 @@ interface Props {
   labelledBy: string;
 }
 
-const COMMANDS: FormatCommand[] = ['bold', 'italic', 'underline', 'insertUnorderedList', 'insertOrderedList'];
+const COMMANDS: FormatCommand[] = ['bold', 'italic', 'underline', 'superscript', 'subscript', 'insertUnorderedList', 'insertOrderedList'];
 
 /**
  * Written answer with basic formatting (bold, italic, underline, lists).
@@ -83,6 +83,12 @@ export function TypedInput({ value, onChange, disabled, labelledBy }: Props) {
           document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
         }}
         onKeyDown={(e) => {
+          // Ctrl+↑ / Ctrl+↓ toggle superscript / subscript (pressing the other one switches directly).
+          if (e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+            e.preventDefault();
+            apply(e.key === 'ArrowUp' ? 'superscript' : 'subscript');
+            return;
+          }
           // Tab inside a list nests it; elsewhere Tab keeps moving focus.
           if (e.key === 'Tab' && document.queryCommandState('insertUnorderedList') !== document.queryCommandState('insertOrderedList')) {
             e.preventDefault();

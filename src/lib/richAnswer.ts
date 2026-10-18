@@ -1,7 +1,28 @@
 import DOMPurify from 'dompurify';
 
 /** Formatting a student can apply to a written answer. */
-const ALLOWED_TAGS = ['b', 'strong', 'i', 'em', 'u', 'ul', 'ol', 'li', 'br', 'p', 'div'];
+const ALLOWED_TAGS = ['b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'ul', 'ol', 'li', 'br', 'p', 'div'];
+
+// Unicode sub/superscript characters, so plain-text exports still read H₂O, x², Fe³⁺.
+const SUB: Record<string, string> = {
+  ...Object.fromEntries([...'0123456789'].map((d, i) => [d, String.fromCharCode(0x2080 + i)])),
+  '+': '₊', '-': '₋', '−': '₋', '=': '₌', '(': '₍', ')': '₎',
+  a: 'ₐ', e: 'ₑ', h: 'ₕ', k: 'ₖ', l: 'ₗ', m: 'ₘ', n: 'ₙ', o: 'ₒ', p: 'ₚ', s: 'ₛ', t: 'ₜ', x: 'ₓ',
+};
+const SUP: Record<string, string> = {
+  '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
+  '+': '⁺', '-': '⁻', '−': '⁻', '=': '⁼', '(': '⁽', ')': '⁾', n: 'ⁿ', i: 'ⁱ',
+};
+
+/** "2" → "₂"; text with no Unicode equivalent falls back to _{…} / ^{…}. */
+export function scriptToPlain(text: string, kind: 'sub' | 'sup'): string {
+  if (!text) return '';
+  const map = kind === 'sub' ? SUB : SUP;
+  const chars = [...text];
+  if (chars.every((c) => map[c])) return chars.map((c) => map[c]).join('');
+  const mark = kind === 'sub' ? '_' : '^';
+  return chars.length === 1 ? `${mark}${text}` : `${mark}{${text}}`;
+}
 
 export function sanitizeAnswerHtml(html: string): string {
   return DOMPurify.sanitize(html, { ALLOWED_TAGS, ALLOWED_ATTR: [] });
@@ -48,6 +69,12 @@ function convert(html: string, mode: Mode): string {
         child.childNodes.forEach((c) => walk(c, listDepth + 1));
         newline();
       }
+      return;
+    }
+    if (tag === 'SUB' || tag === 'SUP') {
+      const kind = tag === 'SUB' ? 'sub' : 'sup';
+      const inner = (node.textContent ?? '').replace(/\u00a0/g, ' ');
+      out.push(mode === 'markdown' ? `<${kind}>${inner}</${kind}>` : scriptToPlain(inner, kind));
       return;
     }
     if (BLOCK.has(tag)) newline();
